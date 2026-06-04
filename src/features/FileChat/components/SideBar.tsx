@@ -14,9 +14,11 @@ interface SideBarProps {
   onFileSelect: (file: File) => void;
   clearFile: () => void;
   previewUrl: string | null;
+  sendMessage: (message: string) => void;
+  isSending: boolean;
 }
 
-export function SideBar({ file, onFileSelect, clearFile, previewUrl }: SideBarProps) {
+export function SideBar({ file, onFileSelect, clearFile, previewUrl, sendMessage, isSending }: SideBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -161,10 +163,12 @@ export function SideBar({ file, onFileSelect, clearFile, previewUrl }: SideBarPr
         <div className="mt-2 grid gap-1.5">
           {STARTER_PROMPTS.map((prompt) => (
             <button
-              className="rounded-lg px-3 py-2.5 text-left text-sm"
-              disabled={!Boolean(file)}
+              className={`rounded-lg px-3 py-2.5 text-left text-sm border border-neutral-200 hover:bg-neutral-50 disabled:opacity-50 ${
+                isSending ? "cursor-not-allowed" : ""
+              }`}
+              disabled={!Boolean(file) || isSending}
               key={prompt}
-              onClick={() => console.log(prompt)}
+              onClick={() => sendMessage(prompt)}
               type="button"
             >
               {prompt}

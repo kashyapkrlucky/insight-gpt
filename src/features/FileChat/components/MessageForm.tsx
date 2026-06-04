@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { type FormEvent, type KeyboardEvent, useState } from "react";
 
 type MessageFormProps = {
@@ -34,7 +35,7 @@ export function MessageForm({ disabled, isSending, onSubmit }: MessageFormProps)
 
   return (
     <form className="border-t border-neutral-200 bg-white px-4 py-4 sm:px-6" onSubmit={handleSubmit}>
-      <div className="mx-auto flex w-full max-w-3xl items-end gap-2 rounded-2xl border border-neutral-200 bg-white p-2 shadow-sm transition focus-within:border-neutral-400 focus-within:shadow-md">
+      <div className={`mx-auto flex w-full max-w-3xl items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 transition focus-within:border-neutral-400 focus-within:shadow-md ${disabled ? "opacity-50" : ""}`}>
         <textarea
           className="max-h-36 min-h-11 flex-1 resize-none border-0 bg-transparent px-3 py-2.5 text-sm leading-6 text-neutral-950 outline-none placeholder:text-neutral-400 disabled:text-neutral-400"
           disabled={disabled || isSending}
@@ -46,11 +47,10 @@ export function MessageForm({ disabled, isSending, onSubmit }: MessageFormProps)
         />
         <button
           aria-label={isSending ? "Reading" : "Send message"}
-          className="shrink-0"
-          disabled={!canSubmit}
+          disabled={!canSubmit || isSending}
           type="submit"
         >
-          {isSending ? "..." : "->"}
+          <Image src="/send.svg" alt="Send" width={24} height={24} />
         </button>
       </div>
     </form>

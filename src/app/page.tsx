@@ -17,6 +17,8 @@ export default function Home() {
         onFileSelect={onFileSelect}
         clearFile={clearFile}
         previewUrl={previewUrl}
+        sendMessage={sendMessage}
+        isSending={isSending}
       />
       <div className="flex-1 flex flex-col">
         <header className="flex min-h-14 items-center justify-between border-b border-neutral-200 px-4 sm:px-6">

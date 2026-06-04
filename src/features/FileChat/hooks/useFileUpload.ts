@@ -3,6 +3,7 @@
 import { ChatMessage } from "@/shared/types";
 import { createMessage, validateUploadFile } from "@/features/FileChat/utils/files";
 import { useMemo, useState } from "react";
+import { askAboutFile } from "../api/fileChatApi";
 
 interface UseFileUploadProps {
   file: File | null;
@@ -36,6 +37,7 @@ export function useFileUpload(): UseFileUploadProps {
     setFile(null);
     setPreviewUrl(null);
     setError(null);
+    setMessages([]);
   };
 
   const fileStatus = useMemo(() => {
@@ -80,7 +82,7 @@ export function useFileUpload(): UseFileUploadProps {
       setIsSending(true);
 
     try {
-      const reply = "I'm processing your request...";
+      const reply = await askAboutFile(file, nextMessages);
       const promise = new Promise((resolve) => {
         setTimeout(() => {
           resolve(true);

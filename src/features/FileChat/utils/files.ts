@@ -26,7 +26,7 @@ export function validateUploadFile(file: File): FileValidationResult {
   if (!isAcceptedMimeType(file.type)) {
     return {
       ok: false,
-      message: "Upload a PDF, PNG, JPG, WEBP, or GIF file."
+      message: "Upload a PDF, PNG, JPG, or WEBP file."
     };
   }
 

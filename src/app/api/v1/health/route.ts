@@ -1,6 +1,6 @@
-export async function POST() {
+export async function GET() {
   try {
-    return new Response("Hello World");
+    return new Response("OK");
   } catch {
     return new Response("Internal Server Error", { status: 500 });
   }

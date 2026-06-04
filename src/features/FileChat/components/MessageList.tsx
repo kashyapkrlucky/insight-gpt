@@ -1,6 +1,8 @@
 import { ASSISTANT_NAME } from "@/shared/constants";
 import { ChatMessage } from "@/shared/types";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -61,10 +63,23 @@ export function MessageList({ messages, isSending }: MessageListProps) {
               <div className="text-xs font-medium text-neutral-500">
                 {message.role === "user" ? "You" : ASSISTANT_NAME}
               </div>
-              <p className="whitespace-pre-wrap break-words">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {message.content}
-              </p>
+              </ReactMarkdown>
             </div>
+
+            {message.role === "user" && (
+              <div className="w-8 h-8 bg-neutral-200 rounded-full">
+                <Image
+                  alt=""
+                  className="object-cover rounded-full border-2 border-neutral-200"
+                  priority
+                  width={32}
+                  height={32}
+                  src="/circle-user-round.svg"
+                />
+              </div>
+            )}
           </div>
         </article>
       ))}
