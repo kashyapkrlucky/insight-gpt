@@ -29,3 +29,9 @@ export type UploadedFileSummary = {
 };
 
 export type AcceptedMimeType = (typeof ACCEPTED_MIME_TYPES)[number];
+
+export interface BaseEntity {
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}
