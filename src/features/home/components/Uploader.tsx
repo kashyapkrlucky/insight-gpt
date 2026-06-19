@@ -8,12 +8,12 @@ export default function Uploader() {
   const [selectedFile, setSelecteedFile] = useState<File | null>(null);
   const { uploadFile } = useChatStore();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
     setSelecteedFile(e.target.files?.[0] || null);
   };
   const handleUpload = async () => {
     if (!selectedFile) return;
     await uploadFile(selectedFile);
+    setSelecteedFile(null);
   };
   const handleRemoveFile = () => {
     setSelecteedFile(null);

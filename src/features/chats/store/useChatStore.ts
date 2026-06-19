@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Chat, Message } from "../types";
-import axios from "@/shared/lib/axios";
+import axios from "@/shared/lib/http/internalApi";
 
 interface ChatStore {
   loading: boolean;
@@ -86,7 +86,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         createdAt: new Date(),
       });
       const { data } = await axios.post("/v1/search", { question, chatId });
-      console.log(data);
       set({ loading: false });
       get().addMessage(data);
     } catch {

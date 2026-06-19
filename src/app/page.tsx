@@ -49,7 +49,6 @@ export default function Home() {
   }, [getUserData]);
 
   useEffect(() => {
-    console.log('currentChat', currentChat);
     if (currentChat && isAuthenticated) {
       getMessages(currentChat.id);
     }

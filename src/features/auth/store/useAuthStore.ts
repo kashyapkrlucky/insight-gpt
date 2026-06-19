@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import axios from "@/shared/lib/axios";
+import axios from "@/shared/lib/http/externalApi";
 
 import { getStoredToken, setStoredToken, ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY } from "../utils";
 import { IUser } from "../types";
@@ -21,6 +21,7 @@ export interface AuthState {
   onGuestLogin: () => Promise<{ user: IUser; access_token: string; refresh_token: string } | null>;
   getLoggedInUser: () => IUser | null;
   getToken: () => string | null;
+  getRefreshedTokens: () => Promise<{ access_token: string; refresh_token: string }>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -77,7 +78,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   onGuestLogin: async () => {
     try {
       set({ isGuestLoading: true });
-      const clientId = process.env.VITE_CLIENT_ID;
+      const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
       const {
         data: { data },
       } = await axios.post("/v1/modules/guest", { clientId });
@@ -106,6 +107,26 @@ export const useAuthStore = create<AuthState>((set) => ({
     setStoredToken(REFRESH_TOKEN_KEY, null);
     setStoredToken(USER_KEY, null);
     set({ user: null, access_token: null, refresh_token: null, isAuthenticated: false, error: null });
+  },
+  getRefreshedTokens: async () => {
+    const current_refresh_token = getStoredToken(REFRESH_TOKEN_KEY);
+
+    if (!current_refresh_token) {
+      throw new Error("Refresh token is missing.");
+    }
+
+    const {
+      data: { data },
+    } = await axios.post(`/v1/modules/session/refresh`, {
+      refresh_token: current_refresh_token,
+    });
+
+    const { access_token, refresh_token } = data;
+    set({ access_token, refresh_token, isAuthenticated: true });
+      setStoredToken(ACCESS_TOKEN_KEY, access_token);
+      setStoredToken(REFRESH_TOKEN_KEY, refresh_token);
+
+    return { access_token, refresh_token };
   },
 }));
 

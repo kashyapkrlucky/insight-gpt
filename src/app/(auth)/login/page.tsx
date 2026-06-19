@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   const onAtlasLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/login?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}/login?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`;
   };
 
   if (loading && !isOAuthChecked) {

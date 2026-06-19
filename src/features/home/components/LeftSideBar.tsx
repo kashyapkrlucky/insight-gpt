@@ -21,7 +21,7 @@ export default function LeftSideBar() {
         </div>
       </header>
 
-      <section className="flex-1 border-b border-neutral-200 pb-4">
+      <section className="flex-1 flex flex-col gap-4 pb-4 overflow-y-auto">
         <div className="flex items-start justify-between gap-3 px-1">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-400">
@@ -35,11 +35,11 @@ export default function LeftSideBar() {
             {formatBytes(MAX_UPLOAD_BYTES)} max
           </span>
         </div>
-      <Uploader />
-      <h3 className=" border-t border-neutral-200 pt-4 px-1 text-xs font-medium uppercase tracking-wider text-neutral-600">
-        Recent Chats
-      </h3>
-      <ChatList />
+        <Uploader />
+        <h3 className=" border-t border-neutral-200 pt-4 px-1 text-xs font-medium uppercase tracking-wider text-neutral-600">
+          Recent Chats
+        </h3>
+        <ChatList />
       </section>
       <footer className="border-t border-gray-300">
         <UserMenu />
