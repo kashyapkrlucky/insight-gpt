@@ -4,6 +4,7 @@ import axios from "@/shared/lib/http/internalApi";
 
 interface ChatStore {
   loading: boolean;
+  inlineLoading: boolean;
   error: string | null;
   chats: Chat[];
   uploadFile: (file: File) => Promise<void>;
@@ -21,6 +22,7 @@ interface ChatStore {
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   loading: false,
+  inlineLoading: false,
   error: null,
   chats: [],
   messages: [],
@@ -57,27 +59,33 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
   getChats: async () => {
     try {
+      set({ loading: true });
       const { data } = await axios.get("/v1/chats");
       set({ chats: data });
       return data;
     } catch (error) {
       console.error(error);
       return [];
+    } finally {
+      set({ loading: false });
     }
   },
   getMessages: async (chatId: string) => {
     try {
+      set({ loading: true });
       const { data } = await axios.get(`/v1/chats/${chatId}/messages`);
       set({ messages: data });
       return data;
     } catch (error) {
       console.error(error);
       return [];
+    } finally {
+      set({ loading: false });
     }
   },
   sendMessage: async (question: string, chatId: string) => {
     try {
-      set({ loading: true, error: null });
+      set({ inlineLoading: true, error: null });
       get().addMessage({
         id: crypto.randomUUID(),
         chatId,
@@ -86,14 +94,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         createdAt: new Date(),
       });
       const { data } = await axios.post("/v1/search", { question, chatId });
-      set({ loading: false });
+      set({ inlineLoading: false });
       get().addMessage(data);
     } catch {
       set({
         error: "Failed to search",
       });
     } finally {
-      set({ loading: false });
+      set({ inlineLoading: false });
     }
   },
   addMessage: (message: Message) =>

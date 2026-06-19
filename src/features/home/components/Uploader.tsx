@@ -6,7 +6,7 @@ import { FileTextIcon, XIcon } from "lucide-react";
 
 export default function Uploader() {
   const [selectedFile, setSelecteedFile] = useState<File | null>(null);
-  const { uploadFile } = useChatStore();
+  const { uploadFile, loading } = useChatStore();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelecteedFile(e.target.files?.[0] || null);
   };
@@ -62,7 +62,9 @@ export default function Uploader() {
 
       {selectedFile && (
         <div className="flex items-center justify-end gap-2">
-          <Button onClick={handleUpload}>Upload</Button>
+          <Button onClick={handleUpload} loading={loading}>
+            Upload
+          </Button>
         </div>
       )}
     </>

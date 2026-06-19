@@ -2,8 +2,10 @@ import { type Message } from "@/features/chats/types";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useAuthStore } from "@/features/auth/store/useAuthStore";
 
 export default function ChatMessage({ message }: { message: Message }) {
+  const { user } = useAuthStore();
   return (
     <article
       className={`mb-7 flex gap-3 ${message.author === "user" ? "justify-end" : "justify-start"}`}
@@ -28,7 +30,7 @@ export default function ChatMessage({ message }: { message: Message }) {
         )}
         <div className="flex flex-col gap-2 ">
           <div className="text-xs font-medium text-neutral-500">
-            {message.author === "user" ? "You" : "Assistant"}
+            {message.author === "user" ? "You" : "Selene"}
           </div>
           <div className="prose prose-neutral max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -45,7 +47,7 @@ export default function ChatMessage({ message }: { message: Message }) {
               priority
               width={32}
               height={32}
-              src="/circle-user-round.svg"
+              src={user?.avatar || "/circle-user-round.svg"}
             />
           </div>
         )}

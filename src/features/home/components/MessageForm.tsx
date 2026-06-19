@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function MessageForm() {
   const [question, setQuestion] = useState("");
-  const { currentChat, sendMessage, loading } = useChatStore();
+  const { currentChat, sendMessage, inlineLoading } = useChatStore();
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
     if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) {
@@ -36,7 +36,7 @@ export default function MessageForm() {
       />
       <button
         aria-label={"Send message"}
-        disabled={question.trim() === "" || loading}
+        disabled={question.trim() === "" || inlineLoading}
         onClick={onSubmit}
         className="p-4"
       >

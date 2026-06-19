@@ -22,6 +22,7 @@ export default function Home() {
     getMessages,
     trigger,
     loading: chatLoading,
+    inlineLoading
   } = useChatStore();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +65,7 @@ export default function Home() {
     }
   }, [isAuthenticated, loading, isOAuthChecked, router]);
 
-  if (loading && !isOAuthChecked && chatLoading) {
+  if ((loading || !isOAuthChecked) && chatLoading) {
     return <PageLoader />;
   }
 
@@ -103,7 +104,7 @@ export default function Home() {
                   <ChatMessage key={message.id} message={message} />
                 ))
               )}
-              {loading && <InlineLoader />}
+              {inlineLoading && <InlineLoader />}
               <div ref={bottomRef}></div>
             </section>
             <footer className="p-4 bg-white border-t border-neutral-200">

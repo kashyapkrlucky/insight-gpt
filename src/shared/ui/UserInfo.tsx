@@ -6,8 +6,6 @@ import Image from "next/image";
 
 export function UserInfo({ showEmail = true }: { showEmail?: boolean }) {
   const { user } = useAuthStore();
-  console.log(user);
-  
   if (!user) {
     return null;
   }
