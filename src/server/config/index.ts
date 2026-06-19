@@ -11,12 +11,12 @@ function readNumberEnv(names: readonly string[], fallback: number): number {
 }
 
 export const AI_CONFIG = {
-  apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY,
+  apiKey: process.env.AI_API_KEY,
   maxOutputTokens: readNumberEnv(
     ["AI_MAX_OUTPUT_TOKENS", "AI_MAX_COMPLETION_TOKENS"],
     1_000,
   ),
-  model: process.env.OPENAI_MODEL || process.env.AI_MODEL || "gpt-4o-mini",
+  model: process.env.AI_MODEL || "gpt-4o-mini",
   temperature: readNumberEnv(["AI_TEMPERATURE"], 0.3),
 } as const;
 
@@ -25,7 +25,7 @@ let cachedOpenAIClient: OpenAI | null = null;
 export function getOpenAIClient(): OpenAI {
   if (!AI_CONFIG.apiKey) {
     throw new OpenAIResponseError(
-      "OpenAI API key is missing. Add OPENAI_API_KEY to .env.local and restart the dev server.",
+      "OpenAI API key is missing. Add AI_API_KEY to .env.local and restart the dev server.",
     );
   }
 

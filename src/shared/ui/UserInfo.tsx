@@ -16,7 +16,7 @@ export function UserInfo({ showEmail = true }: { showEmail?: boolean }) {
       {user && user.avatar ? (
         <div className="relative">
           <Image
-            src={"https://atlas-id.vercel.app/avatars/" + user.avatar}
+            src={user.avatar}
             alt="User avatar"
             width={36}
             height={36}
