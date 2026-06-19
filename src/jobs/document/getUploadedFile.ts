@@ -1,4 +1,4 @@
-import { task } from "@trigger.dev/sdk";
+import { logger, task } from "@trigger.dev/sdk";
 import { imageUploadService } from "@/infra/storage/supabase/service";
 import {
   parsePdf,
@@ -13,14 +13,27 @@ export const getUploadedFile = task({
     const data = await imageUploadService.downloadFileByUrl(payload.fileUrl);
 
     const text = await parsePdf(data);
+    logger.info("Text extracted from PDF", {
+      textLength: text.length,
+    });
     const chunks = await chunkDocument(text, {
       documentId: payload.fileId,
       userId: payload.userId,
     });
 
+    logger.info("Chunks created", {
+      chunkCount: chunks.length,
+    });
+
     const embeddings = await embedChunks(chunks);
 
+    logger.info("Embeddings created", {
+      embeddingCount: embeddings.length,
+    });
+
     await saveVectors(chunks, embeddings);
+
+    logger.info("Vectors saved to database");
 
     return {
       message: "File processed successfully",
