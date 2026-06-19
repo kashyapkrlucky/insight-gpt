@@ -9,7 +9,7 @@ import { saveVectors } from "@/infra/vectorDB";
 
 export const getUploadedFile = task({
   id: "get-uploaded-file",
-  run: async (payload: { fileUrl: string; userId: string; fileId: string }) => {
+  run: async (payload: { fileUrl: string; userId: string; documentId: string }) => {
     const data = await imageUploadService.downloadFileByUrl(payload.fileUrl);
 
     const text = await parsePdf(data);
@@ -17,7 +17,7 @@ export const getUploadedFile = task({
       textLength: text.length,
     });
     const chunks = await chunkDocument(text, {
-      documentId: payload.fileId,
+      documentId: payload.documentId,
       userId: payload.userId,
     });
 

@@ -33,6 +33,8 @@ export async function saveVectors(chunks: Chunk[], embeddings: number[][]) {
     };
   });
 
+  console.log("Points to be saved:", points.length);
+
   await vectorDB.upsert("insight-pdf", {
     wait: true,
     points,

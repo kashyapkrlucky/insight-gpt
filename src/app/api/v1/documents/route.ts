@@ -49,8 +49,9 @@ export async function POST(request: NextRequest) {
     const trigger = await getUploadedFile.trigger({
       fileUrl: path,
       userId: userId!,
-      fileId: data.id,
+      documentId: document.id,
     });
+
     return Response.json({ success: true, data, trigger, chat });
   } catch (error) {
     console.error(error);
