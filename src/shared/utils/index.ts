@@ -27,35 +27,16 @@ export const getDisplayName = (user: IUser) => {
   return user?.name || user?.username || user?.email || "User";
 };
 
-export const getAvatarUrl = (user: IUser) => {
-  const avatar = user?.avatar?.trim();
+export function formatBytes(bytes: number): string {
+  const units = ["B", "KB", "MB", "GB"] as const;
+  let value = bytes;
+  let unitIndex = 0;
 
-  if (avatar) {
-    if (
-      avatar.startsWith("/") ||
-      avatar.startsWith("data:") ||
-      avatar.startsWith("blob:")
-    ) {
-      return avatar;
-    }
-
-    try {
-      return new URL(avatar).toString();
-    } catch {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-      const cleanAvatar = avatar.replace(/^\/+/, "");
-
-      if (!apiUrl) {
-        return `/${cleanAvatar}`;
-      }
-
-      if (cleanAvatar.startsWith("avatars/")) {
-        return `${apiUrl}/${cleanAvatar}`;
-      }
-
-      return `${apiUrl}/avatars/${cleanAvatar}`;
-    }
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
   }
 
-  return "/circle-user-round.svg";
-};
+  const precision = unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(precision)} ${units[unitIndex]}`;
+}

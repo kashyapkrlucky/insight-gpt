@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Insight GPT",
-  description: "Upload pdf or image and get insights from Selene",
+  description: "AI-powered PDF analysis and insights",
 };
 
 export default function RootLayout({
