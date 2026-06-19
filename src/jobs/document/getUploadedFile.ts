@@ -5,21 +5,16 @@ import {
   chunkDocument,
   embedChunks,
 } from "@/infra/ingestion";
-import { prisma } from "@/infra/db/connect";
 import { saveVectors } from "@/infra/vectorDB";
 
 export const getUploadedFile = task({
   id: "get-uploaded-file",
-  run: async (payload: { fileUrl: string; userId: string }) => {
-    const file = await prisma.document.findFirst({
-      where: { url: payload.fileUrl },
-    });
-
+  run: async (payload: { fileUrl: string; userId: string; fileId: string }) => {
     const data = await imageUploadService.downloadFileByUrl(payload.fileUrl);
 
     const text = await parsePdf(data);
     const chunks = await chunkDocument(text, {
-      documentId: file?.id || "test",
+      documentId: payload.fileId,
       userId: payload.userId,
     });
 

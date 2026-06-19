@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const { data } = await imageUploadService.uploadFile(file, userId!);
-    
+
     if (!data) {
       throw new Error("Failed to upload file");
     }
 
     const path = getStoragePath(data.url);
-    
+
     const document = await prisma.document.create({
       data: {
         fileId: data.id,
@@ -46,7 +46,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const trigger = await getUploadedFile.trigger({ fileUrl: path, userId: userId! });
+    const trigger = await getUploadedFile.trigger({
+      fileUrl: path,
+      userId: userId!,
+      fileId: data.id,
+    });
     return Response.json({ success: true, data, trigger, chat });
   } catch (error) {
     console.error(error);
