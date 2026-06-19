@@ -1,4 +1,4 @@
-import { createClient } from "./client";
+import { supabaseService } from "./client";
 import { UploadResponse } from "./types";
 import {
   SupabaseError,
@@ -8,7 +8,7 @@ import {
   handleError,
 } from "./utils";
 
-const supabase = createClient();
+const supabase = supabaseService();
 
 export class ImageUploadService {
   private bucketName: string;

@@ -1,6 +1,6 @@
 import { imageUploadService } from "@/infra/storage/supabase/service";
 import { prisma } from "@/infra/db/connect";
-import { getUploadedFile } from "@/infra/trigger/client";
+import { getUploadedFile } from "@/jobs/document/getUploadedFile";
 import { getUserFromHeaders } from "@/features/auth/utils";
 import { NextRequest } from "next/server";
 

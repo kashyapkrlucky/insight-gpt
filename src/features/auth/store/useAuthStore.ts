@@ -2,7 +2,13 @@ import { create } from "zustand";
 
 import axios from "@/shared/lib/http/externalApi";
 
-import { getStoredToken, setStoredToken, ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY } from "../utils";
+import {
+  getStoredToken,
+  setStoredToken,
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  USER_KEY,
+} from "../utils";
 import { IUser } from "../types";
 
 export interface AuthState {
@@ -17,11 +23,24 @@ export interface AuthState {
   clearError: () => void;
   initialize: () => Promise<void>;
 
-  getUserData: (code: string) => Promise<{ user: IUser; access_token: string; refresh_token: string } | null>;
-  onGuestLogin: () => Promise<{ user: IUser; access_token: string; refresh_token: string } | null>;
+  getUserData: (
+    code: string,
+  ) => Promise<{
+    user: IUser;
+    access_token: string;
+    refresh_token: string;
+  } | null>;
+  onGuestLogin: () => Promise<{
+    user: IUser;
+    access_token: string;
+    refresh_token: string;
+  } | null>;
   getLoggedInUser: () => IUser | null;
   getToken: () => string | null;
-  getRefreshedTokens: () => Promise<{ access_token: string; refresh_token: string }>;
+  getRefreshedTokens: () => Promise<{
+    access_token: string;
+    refresh_token: string;
+  }>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -43,7 +62,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const token = getStoredToken(ACCESS_TOKEN_KEY);
       const user = getStoredToken(USER_KEY);
       if (token && user) {
-        set({ access_token: token, isAuthenticated: true, user: JSON.parse(user) });
+        set({
+          access_token: token,
+          isAuthenticated: true,
+          user: JSON.parse(user),
+        });
       }
       set({ loading: false });
     } catch (error) {
@@ -106,7 +129,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     setStoredToken(ACCESS_TOKEN_KEY, null);
     setStoredToken(REFRESH_TOKEN_KEY, null);
     setStoredToken(USER_KEY, null);
-    set({ user: null, access_token: null, refresh_token: null, isAuthenticated: false, error: null });
+    set({
+      user: null,
+      access_token: null,
+      refresh_token: null,
+      isAuthenticated: false,
+      error: null,
+    });
   },
   getRefreshedTokens: async () => {
     const current_refresh_token = getStoredToken(REFRESH_TOKEN_KEY);
@@ -123,8 +152,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const { access_token, refresh_token } = data;
     set({ access_token, refresh_token, isAuthenticated: true });
-      setStoredToken(ACCESS_TOKEN_KEY, access_token);
-      setStoredToken(REFRESH_TOKEN_KEY, refresh_token);
+    setStoredToken(ACCESS_TOKEN_KEY, access_token);
+    setStoredToken(REFRESH_TOKEN_KEY, refresh_token);
 
     return { access_token, refresh_token };
   },

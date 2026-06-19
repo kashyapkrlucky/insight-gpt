@@ -22,12 +22,12 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
   const loading = false;
-  const [isOAuthChecked, setIsOAuthChecked] = useState(false);
+  const [isOAuthChecked] = useState(false);
 
   const {
     onGuestLogin,
     isAuthenticated,
-    loading: isGuestLoading,
+    isGuestLoading,
   } = useAuthStore();
   const router = useRouter();
 
@@ -47,6 +47,7 @@ export default function Login() {
   };
 
   const onAtlasLogin = () => {
+    console.log("Atlas login");
     window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}/login?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`;
   };
 

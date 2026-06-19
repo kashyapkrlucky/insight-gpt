@@ -1,3 +1,4 @@
+"use client";
 import { useChatStore } from "@/features/chats/store/useChatStore";
 import { useRealtimeRun } from "@trigger.dev/react-hooks";
 

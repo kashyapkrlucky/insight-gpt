@@ -1,36 +1,329 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Insight GPT
 
-## Getting Started
+Production-ready Retrieval-Augmented Generation (RAG) platform built with Next.js, OpenAI, Qdrant, Supabase, Neon, and Trigger.dev.
 
-First, run the development server:
+Users can upload PDF documents, automatically index their content into a vector database, and chat with their documents using semantic search and AI-powered answers.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+# Screenshot
+
+![Screenshot](screens/1.png)
+![Screenshot](screens/2.png)
+
+## Features
+
+### Document Management
+
+* PDF upload
+* Secure file storage with Supabase Storage
+* Document status tracking
+* Multi-document support
+* User-level document isolation
+
+### AI & RAG
+
+* PDF text extraction
+* Intelligent document chunking
+* OpenAI embeddings
+* Semantic vector search with Qdrant
+* Context-aware answer generation
+* Source retrieval
+* Hallucination reduction through retrieval-first architecture
+
+### Chat Experience
+
+* Ask questions about uploaded PDFs
+* AI-generated answers based only on document content
+* Chat history persistence
+* Multi-session support
+
+### Background Processing
+
+* Asynchronous document indexing
+* Trigger.dev workflows
+* Scalable ingestion pipeline
+* Fault-tolerant processing
+
+---
+
+## Architecture
+
+```text
+User Uploads PDF
+        │
+        ▼
+Supabase Storage
+        │
+        ▼
+Trigger.dev Job
+        │
+        ▼
+PDF Extraction
+        │
+        ▼
+Chunking
+        │
+        ▼
+OpenAI Embeddings
+        │
+        ▼
+Qdrant Vector Database
+        │
+        ▼
+
+User Question
+        │
+        ▼
+OpenAI Embedding
+        │
+        ▼
+Qdrant Similarity Search
+        │
+        ▼
+Relevant Chunks
+        │
+        ▼
+GPT Context Generation
+        │
+        ▼
+Answer
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Frontend
 
-## Learn More
+* Next.js 15
+* React
+* TypeScript
+* Tailwind CSS
 
-To learn more about Next.js, take a look at the following resources:
+### Backend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Next.js Route Handlers
+* Server Actions
+* Trigger.dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Databases
 
-## Deploy on Vercel
+* Neon PostgreSQL
+* Qdrant Vector Database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Storage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* Supabase Storage
+
+### AI
+
+* OpenAI GPT Models
+* OpenAI Embeddings
+
+### ORM
+
+* Prisma
+
+---
+
+## Database Design
+
+### PostgreSQL (Neon)
+
+Stores:
+
+* Users
+* Documents
+* Chats
+* Messages
+* Metadata
+
+### Qdrant
+
+Stores:
+
+* Vector embeddings
+* Document chunks
+* Search metadata
+
+Example payload:
+
+```json
+{
+  "userId": "user-id",
+  "documentId": "document-id",
+  "chunkIndex": 0,
+  "content": "Chunk text"
+}
+```
+
+---
+
+## Project Structure
+
+```text
+src/
+
+├── app/
+│
+├── features/
+│   ├── documents/
+│   ├── chat/
+│   └── rag/
+│
+├── infrastructure/
+│   ├── ai/
+│   ├── database/
+│   ├── storage/
+│   └── vector-store/
+│
+├── database/
+│   ├── schema/
+│   ├── repositories/
+│   └── migrations/
+│
+├── jobs/
+│   └── document-indexing/
+│
+├── shared/
+│
+└── config/
+```
+
+---
+
+## RAG Pipeline
+
+### 1. Upload
+
+User uploads a PDF.
+
+### 2. Storage
+
+PDF is stored in Supabase Storage.
+
+### 3. Indexing
+
+Background Trigger.dev workflow:
+
+* Download file
+* Parse PDF
+* Split into chunks
+* Generate embeddings
+* Store vectors in Qdrant
+
+### 4. Retrieval
+
+User asks a question.
+
+System:
+
+* Generates query embedding
+* Searches Qdrant
+* Retrieves relevant chunks
+
+### 5. Generation
+
+Retrieved context is sent to GPT.
+
+Model generates an answer grounded in document content.
+
+---
+
+## Local Development
+
+### Install Dependencies
+
+```bash
+pnpm install
+```
+
+### Environment Variables
+
+```env
+DATABASE_URL=
+
+OPENAI_API_KEY=
+
+QDRANT_URL=
+QDRANT_API_KEY=
+
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+TRIGGER_SECRET_KEY=
+```
+
+### Run Application
+
+```bash
+pnpm dev
+```
+
+### Run Trigger.dev
+
+```bash
+pnpm trigger:dev
+```
+
+---
+
+## Production Deployment
+
+### Frontend & API
+
+Deploy to Vercel.
+
+### PostgreSQL
+
+Neon
+
+### Vector Database
+
+Qdrant Cloud
+
+### File Storage
+
+Supabase Storage
+
+### Background Jobs
+
+Trigger.dev Cloud
+
+---
+
+## Security
+
+* User-scoped vector search
+* Row-level ownership validation
+* Secure file storage
+* Server-side OpenAI access
+* No direct database exposure
+
+---
+
+## Future Improvements
+
+* Streaming AI responses
+* OCR support
+* Image extraction from PDFs
+* Multi-document conversations
+* Team workspaces
+* Citations and page references
+* Hybrid search (keyword + vector)
+* Document summaries
+* Agent workflows
+* Usage analytics
+* Billing and subscriptions
+
+---
+
+## License
+
+MIT License
+
+---
+
+Built with Next.js, OpenAI, Qdrant, Neon, Supabase, and Trigger.dev.
