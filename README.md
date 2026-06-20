@@ -71,7 +71,7 @@ OpenAI Embeddings
 Qdrant Vector Database
         │
         ▼
-
+-----
 User Question
         │
         ▼
@@ -178,11 +178,6 @@ src/
 │   ├── storage/
 │   └── vector-store/
 │
-├── database/
-│   ├── schema/
-│   ├── repositories/
-│   └── migrations/
-│
 ├── jobs/
 │   └── document-indexing/
 │
@@ -236,7 +231,7 @@ Model generates an answer grounded in document content.
 ### Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### Environment Variables
@@ -259,13 +254,13 @@ TRIGGER_SECRET_KEY=
 ### Run Application
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 ### Run Trigger.dev
 
 ```bash
-pnpm trigger:dev
+npm run trigger:dev
 ```
 
 ---
@@ -308,15 +303,11 @@ Trigger.dev Cloud
 
 * Streaming AI responses
 * OCR support
-* Image extraction from PDFs
 * Multi-document conversations
 * Team workspaces
-* Citations and page references
 * Hybrid search (keyword + vector)
 * Document summaries
 * Agent workflows
-* Usage analytics
-* Billing and subscriptions
 
 ---
 
