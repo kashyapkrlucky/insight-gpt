@@ -40,3 +40,20 @@ export async function saveVectors(chunks: Chunk[], embeddings: number[][]) {
     points,
   });
 }
+
+
+export async function removeVectors(documentId: string) {
+  await vectorDB.delete("insight-pdf", {
+    wait: true,
+    filter: {
+      must: [
+        {
+          key: "documentId",
+          match: {
+            value: documentId,
+          },
+        },
+      ],
+    },
+  });
+}

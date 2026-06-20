@@ -1,16 +1,22 @@
-import Uploader from "@/features/home/components/Uploader";
+import Uploader from "@/features/chats/components/Uploader";
 import { ChatList } from "@/features/chats/components/ChatList";
 import { APP_NAME, MAX_UPLOAD_BYTES } from "@/shared/constants";
 import { formatBytes } from "@/shared/utils";
 import { UserMenu } from "@/shared/ui/UserMenu";
+import Image from "next/image";
 
 export default function LeftSideBar() {
   return (
     <aside className="w-[320px] border-r border-neutral-200 bg-white p-5 flex flex-col gap-4">
       <header className="flex items-center gap-3 px-1">
-        <div className="w-12 h-12 flex items-center justify-center rounded-md bg-neutral-950 text-xs font-bold text-white">
-          IGPT
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={48}
+          height={48}
+          className="w-12 h-12 rounded-md"
+        />
+
         <div className="min-w-0">
           <h1 className="truncate text-sm font-semibold tracking-tight">
             {APP_NAME}

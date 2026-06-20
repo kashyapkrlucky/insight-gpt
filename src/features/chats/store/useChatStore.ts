@@ -7,7 +7,7 @@ interface ChatStore {
   inlineLoading: boolean;
   error: string | null;
   chats: Chat[];
-  uploadFile: (file: File) => Promise<void>;
+  uploadFile: (formData: FormData) => Promise<void>;
   currentFile: string | null;
   trigger: { id: string | null; publicAccessToken: string | null };
   getChats: () => Promise<Chat[]>;
@@ -18,6 +18,7 @@ interface ChatStore {
   sendMessage: (question: string, chatId: string) => Promise<void>;
   addMessage: (message: Message) => void;
   addChat: (chat: Chat) => void;
+  deleteChat: (chatId: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -31,11 +32,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   addChat: (chat: Chat) => set({ chats: [chat, ...get().chats] }),
   currentFile: null,
   trigger: { id: null, publicAccessToken: null },
-  uploadFile: async (file: File) => {
+  uploadFile: async (formData: FormData) => {
     try {
       set({ loading: true, error: null });
-      const formData = new FormData();
-      formData.append("file", file);
       const {
         data: { data, trigger, chat },
       } = await axios.post("/v1/documents", formData);
@@ -106,4 +105,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
   addMessage: (message: Message) =>
     set((state) => ({ ...state, messages: [...state.messages, message] })),
+  deleteChat: async (chatId: string) => {
+    try {
+      set({ loading: true });
+      await axios.delete(`/v1/chats/${chatId}`);
+      set({ chats: get().chats.filter((chat) => chat.id !== chatId) });
+      set({ currentChat: get().chats[0] || null });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));

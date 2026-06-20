@@ -1,24 +1,25 @@
 "use client";
 import useAuthStore from "@/features/auth/store/useAuthStore";
 import {
-  TEXT_AND,
+  // TEXT_AND,
   TEXT_ATLAS_ID_DESCRIPTION,
-  TEXT_BY_CONTINUING,
+  // TEXT_BY_CONTINUING,
   TEXT_CONTINUE_AS_GUEST,
   TEXT_COPYRIGHT,
   TEXT_DESCRIPTION,
   TEXT_OR,
-  TEXT_PRIVACY,
+  // TEXT_PRIVACY,
   TEXT_SIGN_IN_WITH_ATLAS_ID,
-  TEXT_TERMS,
+  // TEXT_TERMS,
   TEXT_WELCOME_BACK,
 } from "@/shared/constants";
 import { Button } from "@/shared/ui/Button";
-import PageLink from "@/shared/ui/PageLink";
+// import PageLink from "@/shared/ui/PageLink";
 import PageLoader from "@/shared/ui/PageLoader";
 import { CircleUserRoundIcon, Loader2Icon, LogInIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Login() {
   const loading = false;
@@ -26,16 +27,16 @@ export default function Login() {
 
   const {
     onGuestLogin,
-    isAuthenticated,
+    // isAuthenticated,
     isGuestLoading,
   } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
-    if (isOAuthChecked && !isAuthenticated && !loading) {
-      // navigate("/login");
-    }
-  }, [isAuthenticated, loading, isOAuthChecked]);
+  // useEffect(() => {
+  //   if (isOAuthChecked && !isAuthenticated && !loading) {
+  //     // navigate("/login");
+  //   }
+  // }, [isAuthenticated, loading, isOAuthChecked]);
 
   const handleGuestLogin = async () => {
     const token = await onGuestLogin();
@@ -59,9 +60,13 @@ export default function Login() {
     <div className="w-full max-w-md bg-white/95 backdrop-blur-sm p-8 rounded-2xl border border-slate-200/50 flex flex-col items-center text-center gap-8 transition-all duration-300 shadow">
       {/* Logo Section */}
       <div className="flex flex-col items-center gap-3">
-        <div className="mb-6 inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-lg rounded-3xl shadow-sm border border-black/20">
-          <span className="text-4xl font-bold text-gray-900">INQ</span>
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={64}
+          height={64}
+          className="w-16 h-16 rounded-md"
+        />
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
           {TEXT_WELCOME_BACK}
         </h1>
@@ -105,12 +110,12 @@ export default function Login() {
 
       {/* Terms and Conditions */}
       <div className="text-center space-y-1">
-        <p className="text-xs text-slate-500 leading-relaxed">
+        {/* <p className="text-xs text-slate-500 leading-relaxed">
           {TEXT_BY_CONTINUING}
           <PageLink url="/terms" text={TEXT_TERMS} /> {TEXT_AND}
           <PageLink url="/privacy" text={TEXT_PRIVACY} />
-        </p>
-        <p className="text-xs text-slate-400">{TEXT_COPYRIGHT}</p>
+        </p> */}
+        <p className="text-xs text-slate-400">&copy;{TEXT_COPYRIGHT}</p>
       </div>
     </div>
   );

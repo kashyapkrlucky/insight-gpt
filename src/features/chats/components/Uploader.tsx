@@ -12,7 +12,11 @@ export default function Uploader() {
   };
   const handleUpload = async () => {
     if (!selectedFile) return;
-    await uploadFile(selectedFile);
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    
+    await uploadFile(formData);
     setSelecteedFile(null);
   };
   const handleRemoveFile = () => {

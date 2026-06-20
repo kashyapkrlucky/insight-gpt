@@ -16,7 +16,7 @@ export const STARTER_PROMPTS = [
 
 
 export const TEXT_WELCOME_BACK = "Welcome Back";
-export const TEXT_DESCRIPTION = "Insight GPT is your professional pdf and image analyzer, helping you learn faster and smarter.";
+export const TEXT_DESCRIPTION = "Insight GPT is your professional pdf analyzer, helping you learn faster and smarter.";
 export const TEXT_ATLAS_ID_DESCRIPTION = "Atlas ID is your unified identity across all Atlas services";
 export const TEXT_SIGN_IN_WITH_ATLAS_ID = "Sign in with Atlas ID";
 export const TEXT_OR = "or";
@@ -25,4 +25,4 @@ export const TEXT_CONTINUE_AS_GUEST = "Continue as Guest";
 export const TEXT_BY_CONTINUING = "By continuing, you agree to our";
 export const TEXT_TERMS = "Terms of Service";
 export const TEXT_PRIVACY = "Privacy Policy";
-export const TEXT_COPYRIGHT = "&copy; 2026 Insight GPT. All rights reserved.";
+export const TEXT_COPYRIGHT = "2026 Insight GPT. All rights reserved.";
