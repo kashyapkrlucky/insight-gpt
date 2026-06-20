@@ -1,16 +1,24 @@
 import { logger, task } from "@trigger.dev/sdk";
-import { imageUploadService } from "@/infra/storage/supabase/service";
 import {
   parsePdf,
   chunkDocument,
   embedChunks,
 } from "@/infra/ingestion";
 import { saveVectors } from "@/infra/vectorDB";
+import { storageServerService } from "@/infra/storage/services/StorageServerService";
 
 export const getUploadedFile = task({
   id: "get-uploaded-file",
   run: async (payload: { fileUrl: string; userId: string; documentId: string }) => {
-    const data = await imageUploadService.downloadFileByUrl(payload.fileUrl);
+
+    logger.info("Downloading file", {
+      fileUrl: payload.fileUrl,
+    });
+    const data = await storageServerService.downloadFileByUrl(payload.fileUrl);
+
+    logger.info("File downloaded", {
+      fileUrl: payload.fileUrl,
+    });
 
     const text = await parsePdf(data);
     logger.info("Text extracted from PDF", {

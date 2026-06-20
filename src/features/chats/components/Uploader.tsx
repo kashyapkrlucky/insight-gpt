@@ -3,20 +3,34 @@ import { useState } from "react";
 import { useChatStore } from "@/features/chats/store/useChatStore";
 import { Button } from "@/shared/ui/Button";
 import { FileTextIcon, XIcon } from "lucide-react";
+import { storageClientService } from "@/infra/storage/services/StorageClientService";
+import useAuthStore from "@/features/auth/store/useAuthStore";
 
 export default function Uploader() {
+  const { user } = useAuthStore();
   const [selectedFile, setSelecteedFile] = useState<File | null>(null);
-  const { uploadFile, isFileUploading } = useChatStore();
+  const { createDocument, isFileUploading } = useChatStore();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelecteedFile(e.target.files?.[0] || null);
   };
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    
-    await uploadFile(formData);
+    if (!user?.id) {
+      console.error("User ID is required to upload file");
+      return;
+    }
+
+    const { data } = await storageClientService.uploadFile(
+      selectedFile,
+      user.id,
+    );
+    console.log(data);
+    await createDocument(data!);
+    // const formData = new FormData();
+    // formData.append("file", selectedFile);
+
+    // await uploadFile(formData);
     setSelecteedFile(null);
   };
   const handleRemoveFile = () => {
@@ -58,7 +72,9 @@ export default function Uploader() {
             </div>
             <div className="flex flex-col items-center gap-2">
               <FileTextIcon className="w-8 h-8" />
-              <div className="text-xs break-words px-4">{selectedFile.name}</div>
+              <div className="text-xs break-words px-4">
+                {selectedFile.name}
+              </div>
             </div>
           </div>
         )}

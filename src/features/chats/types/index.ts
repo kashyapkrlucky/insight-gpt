@@ -14,6 +14,14 @@ export interface Message {
   createdAt: Date;
 }
 
+export interface DocumentInput {
+  fileId: string;
+  url: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
 export interface FileObject {
   id: string;
   name: string;

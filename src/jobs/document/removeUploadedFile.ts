@@ -1,11 +1,11 @@
 import { task } from "@trigger.dev/sdk";
-import { imageUploadService } from "@/infra/storage/supabase/service";
 import { removeVectors } from "@/infra/vectorDB";
+import { storageServerService } from "@/infra/storage/services/StorageServerService";
 
 export const removeUploadedFile = task({
   id: "remove-uploaded-file",
   run: async (payload: { fileUrl: string; userId: string; documentId: string }) => {
-    await imageUploadService.deleteFile(payload.fileUrl);
+    await storageServerService.deleteFile(payload.fileUrl);
 
     await removeVectors(payload.documentId);
 

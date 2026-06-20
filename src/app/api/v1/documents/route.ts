@@ -1,16 +1,25 @@
-import { imageUploadService } from "@/infra/storage/supabase/service";
+// import { imageUploadService } from "@/infra/storage/supabase/service";
 import { prisma } from "@/infra/db/connect";
 import { getUploadedFile } from "@/jobs/document/getUploadedFile";
 import { getUserFromHeaders } from "@/features/auth/utils";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
-function getStoragePath(url: string) {
-  const parts = url.split("/object/public/");
+// function getStoragePath(url: string) {
+//   const parts = url.split("/object/public/");
 
-  const [, bucketAndPath] = parts;
+//   const [, bucketAndPath] = parts;
 
-  return bucketAndPath.split("/").slice(1).join("/");
-}
+//   return bucketAndPath.split("/").slice(1).join("/");
+// }
+
+const documentInputSchema = z.object({
+  fileId: z.string(),
+  name: z.string(),
+  size: z.number(),
+  type: z.string(),
+  url: z.string(),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,41 +27,44 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const { data } = await imageUploadService.uploadFile(file, userId!);
+    // const formData = await request.formData();
+    // const file = formData.get("file") as File;
+    // const { data } = await imageUploadService.uploadFile(file, userId!);
 
-    if (!data) {
-      throw new Error("Failed to upload file");
-    }
+    // if (!data) {
+    //   throw new Error("Failed to upload file");
+    // }
 
-    const path = getStoragePath(data.url);
+    // const path = getStoragePath(data.url);
+
+    const body = await request.json();
+    const validatedData = documentInputSchema.parse(body);
 
     const document = await prisma.document.create({
       data: {
-        fileId: data.id,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: path,
+        fileId: validatedData.fileId,
+        name: validatedData.name,
+        size: validatedData.size,
+        type: validatedData.type,
+        url: validatedData.url,
       },
     });
 
     const chat = await prisma.chat.create({
       data: {
-        title: file.name,
+        title: validatedData.name,
         documentId: document.id,
         userId: userId!,
       },
     });
 
     const trigger = await getUploadedFile.trigger({
-      fileUrl: path,
+      fileUrl: validatedData.url,
       userId: userId!,
       documentId: document.id,
     });
 
-    return Response.json({ success: true, data, trigger, chat });
+    return Response.json({ success: true, data: validatedData, trigger, chat });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Failed to upload file" }, { status: 500 });

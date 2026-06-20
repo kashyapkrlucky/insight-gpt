@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Chat, Message } from "../types";
+import { Chat, DocumentInput, Message } from "../types";
 import axios from "@/shared/lib/http/internalApi";
 
 interface ChatStore {
@@ -9,6 +9,7 @@ interface ChatStore {
   chats: Chat[];
   isFileUploading: boolean;
   uploadFile: (formData: FormData) => Promise<void>;
+  createDocument: (payload: DocumentInput) => Promise<void>;
   currentFile: string | null;
   trigger: { id: string | null; publicAccessToken: string | null };
   getChats: () => Promise<Chat[]>;
@@ -58,6 +59,28 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       });
     } finally {
       set({ isFileUploading: false });
+    }
+  },
+  createDocument: async (payload: DocumentInput) => {
+    try {
+      set({ loading: true });
+      const {
+        data: { data, trigger, chat },
+      } = await axios.post("/v1/documents", payload);
+      set({
+        isFileUploading: false,
+        currentFile: data.id,
+        currentChat: chat,
+        trigger: {
+          id: trigger.id,
+          publicAccessToken: trigger.publicAccessToken,
+        },
+      });
+      get().addChat(chat);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      set({ loading: false });
     }
   },
   getChats: async () => {
