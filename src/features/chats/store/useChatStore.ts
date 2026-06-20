@@ -7,12 +7,14 @@ interface ChatStore {
   inlineLoading: boolean;
   error: string | null;
   chats: Chat[];
+  isFileUploading: boolean;
   uploadFile: (formData: FormData) => Promise<void>;
   currentFile: string | null;
   trigger: { id: string | null; publicAccessToken: string | null };
   getChats: () => Promise<Chat[]>;
   currentChat: Chat | null;
   setCurrentChat: (chat: Chat) => void;
+  isMessageLoading: boolean;
   messages: Message[];
   getMessages: (chatId: string) => Promise<Message[]>;
   sendMessage: (question: string, chatId: string) => Promise<void>;
@@ -23,10 +25,12 @@ interface ChatStore {
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   loading: false,
+  isFileUploading: false,
   inlineLoading: false,
   error: null,
   chats: [],
   messages: [],
+  isMessageLoading: false,
   currentChat: null,
   setCurrentChat: (chat: Chat) => set({ currentChat: chat }),
   addChat: (chat: Chat) => set({ chats: [chat, ...get().chats] }),
@@ -34,12 +38,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   trigger: { id: null, publicAccessToken: null },
   uploadFile: async (formData: FormData) => {
     try {
-      set({ loading: true, error: null });
+      set({ isFileUploading: true, error: null });
       const {
         data: { data, trigger, chat },
       } = await axios.post("/v1/documents", formData);
       set({
-        loading: false,
+        isFileUploading: false,
         currentFile: data.id,
         currentChat: chat,
         trigger: {
@@ -53,7 +57,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         error: "Failed to upload file",
       });
     } finally {
-      set({ loading: false });
+      set({ isFileUploading: false });
     }
   },
   getChats: async () => {
@@ -71,7 +75,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
   getMessages: async (chatId: string) => {
     try {
-      set({ loading: true });
+      set({ isMessageLoading: true });
       const { data } = await axios.get(`/v1/chats/${chatId}/messages`);
       set({ messages: data });
       return data;
@@ -79,12 +83,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       console.error(error);
       return [];
     } finally {
-      set({ loading: false });
+      set({ isMessageLoading: false });
     }
   },
   sendMessage: async (question: string, chatId: string) => {
     try {
-      set({ inlineLoading: true, error: null });
+      set({ isMessageLoading: true, error: null });
       get().addMessage({
         id: crypto.randomUUID(),
         chatId,
@@ -93,14 +97,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         createdAt: new Date(),
       });
       const { data } = await axios.post("/v1/search", { question, chatId });
-      set({ inlineLoading: false });
+      set({ isMessageLoading: false });
       get().addMessage(data);
     } catch {
       set({
         error: "Failed to search",
       });
     } finally {
-      set({ inlineLoading: false });
+      set({ isMessageLoading: false });
     }
   },
   addMessage: (message: Message) =>

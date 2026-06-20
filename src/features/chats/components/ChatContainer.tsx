@@ -4,12 +4,11 @@ import { useChatStore } from "@/features/chats/store/useChatStore";
 import FileLoaded from "@/features/chats/components/FileLoaded";
 import NoMessage from "@/features/chats/components/NoMessage";
 import ChatMessage from "@/features/chats/components/ChatMessage";
-import InlineLoader from "@/shared/ui/InlineLoader";
 import MessageForm from "@/features/chats/components/MessageForm";
 import NoChatMessage from "@/features/chats/components/NoChatMessage";
 import { useEffect, useRef } from "react";
 import useAuthStore from "@/features/auth/store/useAuthStore";
-import PageLoader from "@/shared/ui/PageLoader";
+import TypingIndicator from "./TypingIndicator";
 export default function ChatContainer() {
   const { isAuthenticated } = useAuthStore();
   const {
@@ -17,8 +16,7 @@ export default function ChatContainer() {
     messages,
     getMessages,
     trigger,
-    loading,
-    inlineLoading,
+    isMessageLoading,
   } = useChatStore();
   const bottomRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -31,10 +29,6 @@ export default function ChatContainer() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (loading) {
-    return <PageLoader />;
-  }
-  
   return (
     <div className="flex-1 flex flex-col  bg-slate-100">
       {currentChat && trigger ? (
@@ -68,7 +62,26 @@ export default function ChatContainer() {
                 <ChatMessage key={message.id} message={message} />
               ))
             )}
-            {inlineLoading && <InlineLoader />}
+            {isMessageLoading && (
+              <>
+                <div className="flex gap-3 p-4 px-4 py-3">
+                  <Image
+                    alt=""
+                    className="object-cover rounded-full border-2 border-neutral-200"
+                    priority
+                    width={32}
+                    height={32}
+                    src="/bot.jpg"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-xs sm:text-sm mb-2 text-zinc-600">
+                      Selene is thinking...
+                    </div>
+                    <TypingIndicator />
+                  </div>
+                </div>
+              </>
+            )}
             <div ref={bottomRef}></div>
           </section>
           <footer className="p-4 bg-white border-t border-neutral-200">
