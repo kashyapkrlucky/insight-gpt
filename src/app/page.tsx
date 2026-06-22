@@ -49,7 +49,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-row h-screen overflow-hidden bg-gray-50 text-gray-900">
+    <main className="flex h-dvh flex-col overflow-hidden bg-neutral-50 text-neutral-950 md:flex-row">
       <LeftSideBar />
       <ChatContainer />
     </main>

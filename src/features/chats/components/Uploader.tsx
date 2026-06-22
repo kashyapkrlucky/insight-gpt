@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "@/features/chats/store/useChatStore";
 import { Button } from "@/shared/ui/Button";
-import { FileTextIcon, XIcon } from "lucide-react";
+import { FileTextIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { storageClientService } from "@/infra/storage/services/StorageClientService";
 import useAuthStore from "@/features/auth/store/useAuthStore";
 import toast from "react-hot-toast";
@@ -56,9 +56,9 @@ export default function Uploader() {
 
   return (
     <>
-      <div className="relative h-32 ">
+      <div className="relative h-36">
         <label
-          className={`grid cursor-pointer place-items-center rounded-xl border border-dashed p-4 text-center transition border-neutral-300 bg-neutral-50 hover:border-neutral-500`}
+          className="grid h-full cursor-pointer place-items-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 p-4 text-center transition hover:border-neutral-500 hover:bg-white has-disabled:pointer-events-none has-disabled:opacity-70"
         >
           <input
             ref={inputRef}
@@ -68,31 +68,40 @@ export default function Uploader() {
             type="file"
             disabled={Boolean(selectedFile) || isFileUploading}
           />
-          <span>
-            <span className="mx-auto grid size-10 place-items-center rounded-lg border border-neutral-200 bg-white text-xl font-medium text-neutral-800 shadow-sm">
-              +
+          <span className="flex flex-col items-center">
+            <span className="mx-auto grid size-10 place-items-center rounded-md border border-neutral-200 bg-white text-neutral-700 shadow-sm">
+              <UploadCloudIcon className="h-5 w-5" />
             </span>
-            <span className="mt-3 block text-sm font-medium text-neutral-950">
+            <span className="mt-3 block text-sm font-semibold text-neutral-950">
               Upload PDF
+            </span>
+            <span className="mt-1 block text-xs text-neutral-500">
+              Drop in a document to start a chat
             </span>
           </span>
         </label>
 
         {selectedFile && (
-          <div className="absolute top-0 left-0 w-full h-full bg-white p-2 rounded-md overflow-hidden rounded-xl border border-neutral-200 shadow-sm">
+          <div className="absolute left-0 top-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-md border border-neutral-200 bg-white p-3 shadow-sm">
             <div className="flex justify-end">
               <button
+                aria-label="Remove selected file"
                 onClick={handleRemoveFile}
                 disabled={isFileUploading}
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                className="rounded-md p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <XIcon className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <FileTextIcon className="w-8 h-8" />
-              <div className="text-xs break-words px-4">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 px-3 text-center">
+              <span className="grid size-10 place-items-center rounded-md bg-neutral-100 text-neutral-700">
+                <FileTextIcon className="h-5 w-5" />
+              </span>
+              <div className="line-clamp-2 text-xs font-medium text-neutral-800">
                 {selectedFile.name}
+              </div>
+              <div className="text-xs text-neutral-500">
+                {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
               </div>
             </div>
           </div>
@@ -100,11 +109,12 @@ export default function Uploader() {
       </div>
 
       {selectedFile && (
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end">
           <Button
             onClick={handleUpload}
             loading={isFileUploading}
             disabled={isFileUploading}
+            fullWidth
           >
             {isFileUploading ? "Uploading" : "Upload"}
           </Button>

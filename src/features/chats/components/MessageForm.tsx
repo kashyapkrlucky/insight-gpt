@@ -1,6 +1,6 @@
 import { useState, type KeyboardEvent } from "react";
 import { useChatStore } from "@/features/chats/store/useChatStore";
-import Image from "next/image";
+import { SendHorizontalIcon } from "lucide-react";
 
 export default function MessageForm() {
   const [question, setQuestion] = useState("");
@@ -34,10 +34,10 @@ export default function MessageForm() {
   };
   return (
     <div
-      className={`mx-auto flex w-full max-w-3xl items-center gap-2 rounded-xl border border-neutral-200 bg-white transition focus-within:border-neutral-400 focus-within:shadow-md`}
+      className="mx-auto flex w-full max-w-3xl items-end gap-2 rounded-md border border-neutral-200 bg-white p-2 shadow-sm transition focus-within:border-neutral-400 focus-within:shadow-md"
     >
       <textarea
-        className="p-4 flex-1 resize-none border-0 bg-transparent px-3 py-2.5 text-sm leading-6 text-neutral-950 outline-none placeholder:text-neutral-400 disabled:text-neutral-400"
+        className="max-h-40 min-h-12 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm leading-6 text-neutral-950 outline-none placeholder:text-neutral-400 disabled:cursor-not-allowed disabled:text-neutral-400"
         onChange={(event) => setQuestion(event.target.value)}
         onKeyDown={handleKeyDown}
         rows={3}
@@ -46,12 +46,12 @@ export default function MessageForm() {
         disabled={isDisabled}
       />
       <button
-        aria-label={"Send message"}
+        aria-label="Send message"
         disabled={question.trim() === "" || isDisabled}
         onClick={onSubmit}
-        className="p-4 disabled:cursor-not-allowed disabled:opacity-50"
+        className="grid size-10 shrink-0 place-items-center rounded-md bg-neutral-950 text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400"
       >
-        <Image src="/send.svg" alt="Send" width={24} height={24} />
+        <SendHorizontalIcon className="h-4 w-4" />
       </button>
     </div>
   );

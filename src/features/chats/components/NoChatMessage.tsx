@@ -7,18 +7,18 @@ export default function NoChatMessage() {
         <div className="flex justify-center">
           <Image
             alt=""
-            className="object-cover rounded-full border-2 border-neutral-200"
+            className="rounded-md border border-neutral-200 object-cover shadow-sm"
             priority
-            width={148}
-            height={148}
+            width={112}
+            height={112}
             src="/bot.jpg"
           />
         </div>
-        <h2 className="mt-6 text-2xl font-semibold tracking-tight text-neutral-950 sm:text-3xl">
+        <h2 className="mt-6 text-2xl font-semibold text-neutral-950">
           What would you like to understand?
         </h2>
         <p className="mt-3 text-sm leading-6 text-neutral-500">
-          Upload a pdf or select a chat to start a conversation
+          Upload a PDF or select a recent chat to begin.
         </p>
       </div>
     </div>

@@ -19,26 +19,26 @@ export function UserInfo({ showEmail = true }: { showEmail?: boolean }) {
             alt="User avatar"
             width={36}
             height={36}
-            className="h-9 w-9 rounded-lg ring-1 ring-sky-300/20 transition-all duration-200 group-hover:ring-sky-300/50"
+            className="h-9 w-9 rounded-md ring-1 ring-neutral-200 transition-all duration-200 group-hover:ring-neutral-300"
           />
         </div>
       ) : (
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-300/15 text-sm font-semibold text-sky-100 ring-1 ring-sky-300/20 transition-all duration-200 group-hover:ring-sky-300/50">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-neutral-950 text-sm font-semibold text-white ring-1 ring-neutral-200 transition-all duration-200">
           {getInitials(user)}
         </div>
       )}
 
       {showEmail ? (
         <div className="min-w-0 flex-1 text-left">
-          <p className="truncate text-sm font-semibold text-slate-800">
+          <p className="truncate text-sm font-semibold text-neutral-800">
             {getDisplayName(user)}
           </p>
-          <p className="truncate text-xs text-[var(--muted)]">
+          <p className="truncate text-xs text-neutral-500">
             {user?.email || "No email"}
           </p>
         </div>
       ) : (
-        <p className="hidden truncate text-sm font-semibold text-slate-800 md:block">
+        <p className="hidden truncate text-sm font-semibold text-neutral-800 md:block">
           {getDisplayName(user)}
         </p>
       )}

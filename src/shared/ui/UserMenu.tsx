@@ -19,7 +19,7 @@ export function UserMenu() {
   const isHydrated = useSyncExternalStore(
     subscribe,
     getClientSnapshot,
-    getServerSnapshot
+    getServerSnapshot,
   );
 
   useEffect(() => {
@@ -38,25 +38,23 @@ export function UserMenu() {
     };
   }, []);
 
-  // Handler for logout
   const handleLogout = () => {
     logout();
     setCurrentChat(null);
     toast.success("Signed out.");
   };
 
-  // Classes for
   const userMenuButtonClasses =
-    "w-full flex items-center justify-center md:justify-between rounded-lg transition-all duration-200 group hover:bg-white/[0.04] md:px-2 md:py-2";
+    "group flex w-full items-center justify-between rounded-md px-2 py-2 transition hover:bg-neutral-50";
   const chevronClasses =
-    "hidden md:block w-4 h-4 text-slate-700 transition-transform duration-200 group-hover:text-slate-900";
+    "h-4 w-4 text-neutral-400 transition-transform duration-200 group-hover:text-neutral-700";
   const dropdownClasses =
-    "absolute bottom-14 left-0 w-64 rounded-lg border border-gray-300 bg-[var(--surface-elevated)] shadow-2xl shadow-black/40 backdrop-blur-xl z-50 overflow-hidden animate-in slide-in-from-bottom-2 fade-in-0 duration-200";
+    "absolute bottom-14 left-0 z-50 w-72 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-lg";
   const userInfoHeaderClasses =
-    "px-4 py-3 bg-white/[0.035] border-b border-gray-300";
+    "border-b border-neutral-200 bg-neutral-50 px-4 py-3";
   const menuItemsClasses = "py-2";
   const logoutButtonClasses =
-    "py-2 px-4 w-full flex items-center text-sm text-slate-800 hover:text-red-600 transition-colors font-medium";
+    "flex w-full items-center px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-red-50 hover:text-red-600";
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -80,8 +78,6 @@ export function UserMenu() {
             {isHydrated && user && <UserInfo />}
           </div>
 
-
-          {/* Menu Items */}
           <div className={menuItemsClasses}>
             <button
               onClick={handleLogout}

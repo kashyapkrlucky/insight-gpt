@@ -7,47 +7,49 @@ import Image from "next/image";
 
 export default function LeftSideBar() {
   return (
-    <aside className="w-[320px] border-r border-neutral-200 bg-white p-5 flex flex-col gap-4">
-      <header className="flex items-center gap-3 px-1">
+    <aside className="flex max-h-[45dvh] w-full shrink-0 flex-col border-b border-neutral-200 bg-white md:max-h-none md:w-[336px] md:border-b-0 md:border-r">
+      <header className="flex items-center gap-3 border-b border-neutral-200 px-5 py-4">
         <Image
           src="/logo.png"
           alt="Logo"
           width={48}
           height={48}
-          className="w-12 h-12 rounded-md"
+          className="h-10 w-10 rounded-md"
         />
 
         <div className="min-w-0">
-          <h1 className="truncate text-sm font-semibold tracking-tight">
+          <h1 className="truncate text-sm font-semibold text-neutral-950">
             {APP_NAME}
           </h1>
-          <p className="truncate text-xs text-neutral-500">
+          <p className="truncate text-xs leading-5 text-neutral-500">
             AI-powered PDF analysis and insights
           </p>
         </div>
       </header>
 
-      <section className="flex-1 flex flex-col gap-4 pb-4 overflow-y-auto">
-        <div className="flex items-start justify-between gap-3 px-1">
+      <section className="flex flex-1 flex-col gap-5 overflow-y-auto px-5 py-5">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
               File
             </p>
-            <h2 className="mt-1 text-sm font-semibold text-neutral-950">
-              Pdf only
+            <h2 className="mt-1 text-sm font-medium text-neutral-950">
+              PDF workspace
             </h2>
           </div>
-          <span className="rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-500">
+          <span className="rounded-md border border-neutral-200 bg-neutral-50 px-2 py-1 text-xs font-medium text-neutral-500">
             {formatBytes(MAX_UPLOAD_BYTES)} max
           </span>
         </div>
         <Uploader />
-        <h3 className=" border-t border-neutral-200 pt-4 px-1 text-xs font-medium uppercase tracking-wider text-neutral-600">
-          Recent Chats
-        </h3>
-        <ChatList />
+        <div className="flex min-h-0 flex-1 flex-col gap-3 border-t border-neutral-200 pt-5">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+            Recent Chats
+          </h3>
+          <ChatList />
+        </div>
       </section>
-      <footer className="border-t border-gray-300">
+      <footer className="border-t border-neutral-200 px-5 py-3">
         <UserMenu />
       </footer>
     </aside>

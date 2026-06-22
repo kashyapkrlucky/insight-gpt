@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PageLoader from "@/shared/ui/PageLoader";
@@ -21,7 +21,7 @@ export default function AuthLayout({
     return <PageLoader />;
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 p-4">
       {children}
     </div>
   );

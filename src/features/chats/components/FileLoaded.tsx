@@ -37,13 +37,15 @@ export default function FileLoaded() {
   return (
     <div>
       {fileProcessingStatus === "failed" ? (
-        <p className="text-sm text-red-600">File processing failed</p>
+        <p className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700">
+          File processing failed
+        </p>
       ) : fileProcessingStatus === "ready" ? (
-        <div className="text-sm text-green-600">
-          Selene is ready to answer your questions
+        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700">
+          Ready
         </div>
       ) : (
-        <div className="flex items-center gap-2 text-sm text-neutral-500">
+        <div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1.5 text-xs font-medium text-neutral-600">
           <span className="h-3 w-3 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-700" />
           Preparing file
         </div>

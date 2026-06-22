@@ -9,15 +9,15 @@ export default function TypingIndicator({ className }: TypingIndicatorProps) {
     <div className={cn("flex items-center gap-1", className)}>
       <div className="flex gap-1">
         <div
-          className="w-2 h-2 bg-gray-600 rounded-full animate-bounce"
+          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
           style={{ animationDelay: "0ms" }}
         />
         <div
-          className="w-2 h-2 bg-gray-600 rounded-full animate-bounce"
+          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
           style={{ animationDelay: "150ms" }}
         />
         <div
-          className="w-2 h-2 bg-gray-600 rounded-full animate-bounce"
+          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
           style={{ animationDelay: "300ms" }}
         />
       </div>
