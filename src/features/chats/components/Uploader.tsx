@@ -5,6 +5,8 @@ import { Button } from "@/shared/ui/Button";
 import { FileTextIcon, XIcon } from "lucide-react";
 import { storageClientService } from "@/infra/storage/services/StorageClientService";
 import useAuthStore from "@/features/auth/store/useAuthStore";
+import toast from "react-hot-toast";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export default function Uploader() {
   const { user } = useAuthStore();
@@ -17,17 +19,29 @@ export default function Uploader() {
     if (!selectedFile) return;
 
     if (!user?.id) {
-      console.error("User ID is required to upload file");
+      toast.error("Please sign in before uploading a file.");
       return;
     }
-    setFileUploading(true);
 
-    const { data } = await storageClientService.uploadFile(
-      selectedFile,
-      user.id,
-    );
-    await createDocument(data!);
-    setSelecteedFile(null);
+    try {
+      setFileUploading(true);
+      const { data, error, success } = await storageClientService.uploadFile(
+        selectedFile,
+        user.id,
+      );
+
+      if (!success || !data) {
+        throw new Error(error || "Failed to upload file.");
+      }
+
+      const didCreateDocument = await createDocument(data);
+      if (didCreateDocument) {
+        setSelecteedFile(null);
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to upload file."));
+      setFileUploading(false);
+    }
   };
   const handleRemoveFile = () => {
     setSelecteedFile(null);

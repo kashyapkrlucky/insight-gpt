@@ -10,6 +10,7 @@ import {
   USER_KEY,
 } from "../utils";
 import { IUser } from "../types";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export interface AuthState {
   user: IUser | null;
@@ -91,7 +92,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       setStoredToken(ACCESS_TOKEN_KEY, access_token);
       setStoredToken(REFRESH_TOKEN_KEY, refresh_token);
       return { user, access_token, refresh_token };
-    } catch {
+    } catch (error) {
+      set({
+        error: getErrorMessage(error, "Failed to complete sign in."),
+      });
       return null;
     } finally {
       set({ loading: false });
@@ -111,7 +115,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       setStoredToken(ACCESS_TOKEN_KEY, access_token);
       setStoredToken(REFRESH_TOKEN_KEY, refresh_token);
       return { user, access_token, refresh_token };
-    } catch {
+    } catch (error) {
+      set({
+        error: getErrorMessage(error, "Failed to login as guest."),
+      });
       return null;
     } finally {
       set({ isGuestLoading: false });

@@ -5,6 +5,7 @@ import { LogOut, ChevronUp } from "lucide-react";
 import { UserInfo } from "./UserInfo";
 import useAuthStore from "@/features/auth/store/useAuthStore";
 import { useChatStore } from "@/features/chats/store/useChatStore";
+import toast from "react-hot-toast";
 
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
@@ -41,6 +42,7 @@ export function UserMenu() {
   const handleLogout = () => {
     logout();
     setCurrentChat(null);
+    toast.success("Signed out.");
   };
 
   // Classes for

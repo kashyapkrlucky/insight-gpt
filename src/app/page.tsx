@@ -7,6 +7,7 @@ import useAuthStore from "@/features/auth/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import LeftSideBar from "@/features/chats/components/LeftSideBar";
 import ChatContainer from "@/features/chats/components/ChatContainer";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const { getUserData, isAuthenticated, loading } = useAuthStore();
@@ -19,10 +20,15 @@ export default function Home() {
       const code = getCodeFromURL();
       if (code) {
         try {
-          await getUserData(code);
-          setIsOAuthChecked(true);
+          const result = await getUserData(code);
+          if (!result) {
+            toast.error("Failed to complete sign in. Please try again.");
+          }
         } catch (error) {
           console.error("OAuth callback failed:", error);
+          toast.error("Failed to complete sign in. Please try again.");
+        } finally {
+          setIsOAuthChecked(true);
         }
       } else {
         setIsOAuthChecked(true);

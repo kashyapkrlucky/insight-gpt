@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { Chat, DocumentInput, Message } from "../types";
 import axios from "@/shared/lib/http/internalApi";
+import toast from "react-hot-toast";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 interface ChatStore {
   loading: boolean;
@@ -9,8 +11,8 @@ interface ChatStore {
   chats: Chat[];
   isFileUploading: boolean;
   setFileUploading: (isFileUploading: boolean) => void;
-  uploadFile: (formData: FormData) => Promise<void>;
-  createDocument: (payload: DocumentInput) => Promise<void>;
+  uploadFile: (formData: FormData) => Promise<boolean>;
+  createDocument: (payload: DocumentInput) => Promise<boolean>;
   currentFile: string | null;
   trigger: { id: string | null; publicAccessToken: string | null };
   getChats: () => Promise<Chat[]>;
@@ -55,17 +57,22 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         },
       });
       get().addChat(chat);
-    } catch {
+      toast.success("File uploaded.");
+      return true;
+    } catch (error) {
+      const message = getErrorMessage(error, "Failed to upload file.");
       set({
-        error: "Failed to upload file",
+        error: message,
       });
+      toast.error(message);
+      return false;
     } finally {
       set({ isFileUploading: false });
     }
   },
   createDocument: async (payload: DocumentInput) => {
     try {
-      set({  isFileUploading: true });
+      set({ isFileUploading: true, error: null });
       const {
         data: { data, trigger, chat },
       } = await axios.post("/v1/documents", payload);
@@ -78,8 +85,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         },
       });
       get().addChat(chat);
+      toast.success("File uploaded.");
+      return true;
     } catch (error) {
-      console.error(error);
+      const message = getErrorMessage(error, "Failed to upload file.");
+      set({ error: message });
+      toast.error(message);
+      return false;
     } finally {
       set({ isFileUploading: false });
     }
@@ -91,7 +103,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ chats: data });
       return data;
     } catch (error) {
-      console.error(error);
+      const message = getErrorMessage(error, "Failed to fetch chats.");
+      set({ error: message });
+      toast.error(message, { id: "fetch-chats-error" });
       return [];
     } finally {
       set({ loading: false });
@@ -104,7 +118,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ messages: data });
       return data;
     } catch (error) {
-      console.error(error);
+      const message = getErrorMessage(error, "Failed to fetch messages.");
+      set({ error: message });
+      toast.error(message, { id: `fetch-messages-${chatId}` });
       return [];
     } finally {
       set({ isMessageLoading: false });
@@ -123,10 +139,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const { data } = await axios.post("/v1/search", { question, chatId });
       set({ isMessageLoading: false });
       get().addMessage(data);
-    } catch {
+    } catch (error) {
+      const message = getErrorMessage(error, "Failed to send message.");
       set({
-        error: "Failed to search",
+        error: message,
       });
+      toast.error(message);
     } finally {
       set({ isMessageLoading: false });
     }
@@ -139,8 +157,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       await axios.delete(`/v1/chats/${chatId}`);
       set({ chats: get().chats.filter((chat) => chat.id !== chatId) });
       set({ currentChat: get().chats[0] || null });
+      toast.success("Chat deleted.");
     } catch (error) {
-      console.error(error);
+      const message = getErrorMessage(error, "Failed to delete chat.");
+      set({ error: message });
+      toast.error(message);
     } finally {
       set({ loading: false });
     }

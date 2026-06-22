@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_KEY } from "@/features/auth/utils";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
 
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import toast from "react-hot-toast";
 
 const internalApi = axios.create({
   baseURL:
@@ -36,9 +37,23 @@ const shouldSkipRefresh = (url?: string) => {
   return ["/v1/modules/session/refresh"].some((path) => url.includes(path));
 };
 
+const logoutAndRedirectToLogin = () => {
+  useAuthStore.getState().logout();
+  toast.error("Your session has expired. Please sign in again.", {
+    id: "session-expired",
+  });
+
+  if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+    window.location.replace("/login");
+  }
+};
+
 internalApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem(ACCESS_TOKEN_KEY)
+        : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -85,15 +100,11 @@ internalApi.interceptors.response.use(
           await useAuthStore.getState().getRefreshedTokens();
 
           flushQueue();
-          const promise = setTimeout(() => {}, 0);
-          await promise;
 
           return internalApi(original);
         } catch (refreshError) {
           flushQueue(refreshError);
-          if (typeof window !== "undefined") {
-            window.location.href = "/login";
-          }
+          logoutAndRedirectToLogin();
           throw refreshError;
         } finally {
           isRefreshing = false;

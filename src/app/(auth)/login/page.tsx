@@ -20,6 +20,7 @@ import { CircleUserRoundIcon, Loader2Icon, LogInIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const loading = false;
@@ -43,7 +44,10 @@ export default function Login() {
     if (token) {
       router.push("/");
     } else {
-      alert("Failed to login as guest. Please try again.");
+      toast.error(
+        useAuthStore.getState().error ||
+          "Failed to login as guest. Please try again.",
+      );
     }
   };
 
