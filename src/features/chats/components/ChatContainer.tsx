@@ -16,7 +16,8 @@ export default function ChatContainer() {
     messages,
     getMessages,
     trigger,
-    isMessageLoading,
+    isMessagesLoading,
+    isSendingMessage,
   } = useChatStore();
   const bottomRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -55,14 +56,23 @@ export default function ChatContainer() {
             {trigger?.id && <FileLoaded />}
           </header>
           <section className="flex-1 overflow-y-auto flex flex-col gap-4 p-4">
-            {messages.length === 0 ? (
+            {isMessagesLoading ? (
+              <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col justify-end gap-4 py-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    className="h-24 animate-pulse rounded-lg bg-white shadow-sm"
+                    key={index}
+                  />
+                ))}
+              </div>
+            ) : messages.length === 0 ? (
               <NoMessage />
             ) : (
               messages.map((message) => (
                 <ChatMessage key={message.id} message={message} />
               ))
             )}
-            {isMessageLoading && (
+            {isSendingMessage && (
               <>
                 <div className="flex gap-3 p-4 px-4 py-3">
                   <Image

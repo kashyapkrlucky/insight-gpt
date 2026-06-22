@@ -14,8 +14,6 @@ import {
   TEXT_WELCOME_BACK,
 } from "@/shared/constants";
 import { Button } from "@/shared/ui/Button";
-// import PageLink from "@/shared/ui/PageLink";
-import PageLoader from "@/shared/ui/PageLoader";
 import { CircleUserRoundIcon, Loader2Icon, LogInIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,8 +21,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 
 export default function Login() {
-  const loading = false;
-  const [isOAuthChecked] = useState(false);
+  const [isAtlasRedirecting, setIsAtlasRedirecting] = useState(false);
 
   const {
     onGuestLogin,
@@ -32,12 +29,6 @@ export default function Login() {
     isGuestLoading,
   } = useAuthStore();
   const router = useRouter();
-
-  // useEffect(() => {
-  //   if (isOAuthChecked && !isAuthenticated && !loading) {
-  //     // navigate("/login");
-  //   }
-  // }, [isAuthenticated, loading, isOAuthChecked]);
 
   const handleGuestLogin = async () => {
     const token = await onGuestLogin();
@@ -52,13 +43,9 @@ export default function Login() {
   };
 
   const onAtlasLogin = () => {
-    console.log("Atlas login");
+    setIsAtlasRedirecting(true);
     window.location.href = `${process.env.NEXT_PUBLIC_AUTH_URL}/login?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}`;
   };
-
-  if (loading && !isOAuthChecked) {
-    return <PageLoader />;
-  }
 
   return (
     <div className="w-full max-w-md bg-white/95 backdrop-blur-sm p-8 rounded-2xl border border-slate-200/50 flex flex-col items-center text-center gap-8 transition-all duration-300 shadow">
@@ -79,7 +66,11 @@ export default function Login() {
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-3 w-full">
-        <Button disabled={loading} onClick={onAtlasLogin}>
+        <Button
+          disabled={isGuestLoading}
+          loading={isAtlasRedirecting}
+          onClick={onAtlasLogin}
+        >
           <span className="flex items-center justify-center gap-2">
             <LogInIcon />
             {TEXT_SIGN_IN_WITH_ATLAS_ID}
@@ -97,7 +88,8 @@ export default function Login() {
         </div>
 
         <Button
-          disabled={isGuestLoading}
+          disabled={isAtlasRedirecting}
+          loading={isGuestLoading}
           variant="outline"
           onClick={handleGuestLogin}
         >

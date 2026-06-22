@@ -4,7 +4,17 @@ import Image from "next/image";
 
 export default function MessageForm() {
   const [question, setQuestion] = useState("");
-  const { currentChat, sendMessage, inlineLoading } = useChatStore();
+  const { currentChat, fileProcessingStatus, sendMessage, isSendingMessage } =
+    useChatStore();
+  const isFileReady = fileProcessingStatus === "ready";
+  const isDisabled = !currentChat || !isFileReady || isSendingMessage;
+  const placeholder = !currentChat
+    ? "Upload a file to chat"
+    : fileProcessingStatus === "failed"
+      ? "File processing failed"
+      : !isFileReady
+        ? "Preparing file..."
+        : "Ask about this pdf";
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
     if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) {
@@ -12,15 +22,15 @@ export default function MessageForm() {
     }
 
     event.preventDefault();
-    if (question) {
+    if (question.trim() && !isDisabled) {
       onSubmit();
-      setQuestion("");
     }
   }
   const onSubmit = async () => {
-    if (!currentChat) return;
-    sendMessage(question, currentChat?.id);
+    const trimmedQuestion = question.trim();
+    if (!currentChat || !trimmedQuestion || isDisabled) return;
     setQuestion("");
+    await sendMessage(trimmedQuestion, currentChat.id);
   };
   return (
     <div
@@ -31,14 +41,15 @@ export default function MessageForm() {
         onChange={(event) => setQuestion(event.target.value)}
         onKeyDown={handleKeyDown}
         rows={3}
-        placeholder={currentChat ? "Ask about this pdf" : "Upload a file to chat"}
+        placeholder={placeholder}
         value={question}
+        disabled={isDisabled}
       />
       <button
         aria-label={"Send message"}
-        disabled={question.trim() === "" || inlineLoading}
+        disabled={question.trim() === "" || isDisabled}
         onClick={onSubmit}
-        className="p-4"
+        className="p-4 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Image src="/send.svg" alt="Send" width={24} height={24} />
       </button>

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useChatStore } from "@/features/chats/store/useChatStore";
 import { Button } from "@/shared/ui/Button";
 import { FileTextIcon, XIcon } from "lucide-react";
@@ -10,10 +10,17 @@ import { getErrorMessage } from "@/shared/lib/errors";
 
 export default function Uploader() {
   const { user } = useAuthStore();
-  const [selectedFile, setSelecteedFile] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { createDocument, isFileUploading, setFileUploading } = useChatStore();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelecteedFile(e.target.files?.[0] || null);
+    setSelectedFile(e.target.files?.[0] || null);
+  };
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   };
   const handleUpload = async () => {
     if (!selectedFile) return;
@@ -36,7 +43,7 @@ export default function Uploader() {
 
       const didCreateDocument = await createDocument(data);
       if (didCreateDocument) {
-        setSelecteedFile(null);
+        clearSelectedFile();
       }
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to upload file."));
@@ -44,7 +51,7 @@ export default function Uploader() {
     }
   };
   const handleRemoveFile = () => {
-    setSelecteedFile(null);
+    clearSelectedFile();
   };
 
   return (
@@ -54,11 +61,12 @@ export default function Uploader() {
           className={`grid cursor-pointer place-items-center rounded-xl border border-dashed p-4 text-center transition border-neutral-300 bg-neutral-50 hover:border-neutral-500`}
         >
           <input
+            ref={inputRef}
             accept=".pdf,image/png,image/jpeg,image/webp,image/gif"
             className="sr-only"
             onChange={handleFileInput}
             type="file"
-            disabled={Boolean(selectedFile)}
+            disabled={Boolean(selectedFile) || isFileUploading}
           />
           <span>
             <span className="mx-auto grid size-10 place-items-center rounded-lg border border-neutral-200 bg-white text-xl font-medium text-neutral-800 shadow-sm">
@@ -75,6 +83,7 @@ export default function Uploader() {
             <div className="flex justify-end">
               <button
                 onClick={handleRemoveFile}
+                disabled={isFileUploading}
                 className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
               >
                 <XIcon className="w-4 h-4" />
@@ -92,8 +101,12 @@ export default function Uploader() {
 
       {selectedFile && (
         <div className="flex items-center justify-end gap-2">
-          <Button onClick={handleUpload} loading={isFileUploading}>
-            Upload
+          <Button
+            onClick={handleUpload}
+            loading={isFileUploading}
+            disabled={isFileUploading}
+          >
+            {isFileUploading ? "Uploading" : "Upload"}
           </Button>
         </div>
       )}
