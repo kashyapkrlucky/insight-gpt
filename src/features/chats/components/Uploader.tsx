@@ -9,7 +9,7 @@ import useAuthStore from "@/features/auth/store/useAuthStore";
 export default function Uploader() {
   const { user } = useAuthStore();
   const [selectedFile, setSelecteedFile] = useState<File | null>(null);
-  const { createDocument, isFileUploading } = useChatStore();
+  const { createDocument, isFileUploading, setFileUploading } = useChatStore();
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelecteedFile(e.target.files?.[0] || null);
   };
@@ -20,17 +20,13 @@ export default function Uploader() {
       console.error("User ID is required to upload file");
       return;
     }
+    setFileUploading(true);
 
     const { data } = await storageClientService.uploadFile(
       selectedFile,
       user.id,
     );
-    console.log(data);
     await createDocument(data!);
-    // const formData = new FormData();
-    // formData.append("file", selectedFile);
-
-    // await uploadFile(formData);
     setSelecteedFile(null);
   };
   const handleRemoveFile = () => {

@@ -8,13 +8,14 @@ interface ChatStore {
   error: string | null;
   chats: Chat[];
   isFileUploading: boolean;
+  setFileUploading: (isFileUploading: boolean) => void;
   uploadFile: (formData: FormData) => Promise<void>;
   createDocument: (payload: DocumentInput) => Promise<void>;
   currentFile: string | null;
   trigger: { id: string | null; publicAccessToken: string | null };
   getChats: () => Promise<Chat[]>;
   currentChat: Chat | null;
-  setCurrentChat: (chat: Chat) => void;
+  setCurrentChat: (chat: Chat | null) => void;
   isMessageLoading: boolean;
   messages: Message[];
   getMessages: (chatId: string) => Promise<Message[]>;
@@ -33,13 +34,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   messages: [],
   isMessageLoading: false,
   currentChat: null,
-  setCurrentChat: (chat: Chat) => set({ currentChat: chat }),
+  setCurrentChat: (chat: Chat | null) => set({ currentChat: chat }),
   addChat: (chat: Chat) => set({ chats: [chat, ...get().chats] }),
   currentFile: null,
   trigger: { id: null, publicAccessToken: null },
+  setFileUploading: (isFileUploading: boolean) => set({ isFileUploading }),
   uploadFile: async (formData: FormData) => {
     try {
-      set({ isFileUploading: true, error: null });
+      set({ error: null });
       const {
         data: { data, trigger, chat },
       } = await axios.post("/v1/documents", formData);
@@ -63,12 +65,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
   createDocument: async (payload: DocumentInput) => {
     try {
-      set({ loading: true });
+      set({  isFileUploading: true });
       const {
         data: { data, trigger, chat },
       } = await axios.post("/v1/documents", payload);
       set({
-        isFileUploading: false,
         currentFile: data.id,
         currentChat: chat,
         trigger: {
@@ -80,7 +81,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     } catch (error) {
       console.error(error);
     } finally {
-      set({ loading: false });
+      set({ isFileUploading: false });
     }
   },
   getChats: async () => {

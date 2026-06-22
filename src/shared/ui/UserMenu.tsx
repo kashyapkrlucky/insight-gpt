@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import { LogOut, ChevronUp } from "lucide-react";
 import { UserInfo } from "./UserInfo";
 import useAuthStore from "@/features/auth/store/useAuthStore";
+import { useChatStore } from "@/features/chats/store/useChatStore";
 
 const subscribe = () => () => {};
 const getClientSnapshot = () => true;
@@ -12,6 +13,7 @@ const getServerSnapshot = () => false;
 export function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuthStore();
+  const { setCurrentChat } = useChatStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isHydrated = useSyncExternalStore(
     subscribe,
@@ -38,6 +40,7 @@ export function UserMenu() {
   // Handler for logout
   const handleLogout = () => {
     logout();
+    setCurrentChat(null);
   };
 
   // Classes for
