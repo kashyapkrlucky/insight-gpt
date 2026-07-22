@@ -24,12 +24,15 @@ model User {
 model Document {
   id String @id @default(cuid())
   fileId String
+  userId String
   name String
   size Int
   type String
   url String
   status String @default("pending")
   createdAt DateTime @default(now())
+
+  chats Chat[]
 
   @@map("documents")
 }
@@ -41,6 +44,9 @@ model Chat {
   title String
   createdAt DateTime @default(now())
 
+  document Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  messages Message[]
+
   @@map("chats")
 }
 
@@ -50,6 +56,8 @@ model Message {
   author String
   content String
   createdAt DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }

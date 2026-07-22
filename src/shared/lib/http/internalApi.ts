@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 const internalApi = axios.create({
   baseURL:
-    (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") + "/api",
+    (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002") + "/api",
 });
 
 type RetryableAxiosRequestConfig = AxiosRequestConfig & {
@@ -34,7 +34,7 @@ const flushQueue = (error?: unknown) => {
 const shouldSkipRefresh = (url?: string) => {
   if (!url) return true;
 
-  return ["/v1/modules/session/refresh"].some((path) => url.includes(path));
+  return ["/v1/public/session/refresh"].some((path) => url.includes(path));
 };
 
 const logoutAndRedirectToLogin = () => {

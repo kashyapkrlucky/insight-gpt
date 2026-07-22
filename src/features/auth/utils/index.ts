@@ -1,4 +1,3 @@
-import { formatDistance } from "date-fns";
 import { NextRequest } from "next/server";
 export const TOKEN_KEY = "token";
 export const USER_KEY = "user";
@@ -30,59 +29,9 @@ export const setStoredToken = (
   }
 };
 
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
-
 export const STORAGE_KEYS = {
   tasks: "tasks",
 };
-
-export const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-};
-
-export const formatDateWithTime = (date: Date) => {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-};
-
-export const monthYearOnly = (date: string) => {
-  const d = new Date(date);
-  return d.toLocaleString("default", { month: "short", year: "numeric" });
-};
-
-export const formatRelativeTime = (date: string) => {
-  return formatDistance(new Date(date), new Date(), { addSuffix: true });
-};
-
-export function newId() {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return (crypto as Crypto).randomUUID();
-  }
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-export const asDate = (value: unknown): Date | null => {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  const d = new Date(value as string);
-  if (Number.isNaN(d.getTime())) return null;
-  return d;
-};
-
-export const clamp = (n: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, n));
-
-// ---------------
 
 export const getCodeFromURL = () => {
   const params = new URLSearchParams(window.location.search);
@@ -96,7 +45,7 @@ export const getCodeFromURL = () => {
 import { importSPKI, jwtVerify } from "jose";
 import type { KeyLike } from "jose";
 let publicKeyPromise: Promise<KeyLike> | undefined;
-import crypto, { createPublicKey } from "crypto";
+import { createPublicKey } from "crypto";
 
 const normalizePem = (pem: string) => {
   const trimmed = pem.trim();

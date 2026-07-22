@@ -3,7 +3,7 @@ import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
-import { formatDateWithTime } from "@/features/auth/utils";
+import { formatDateWithTime } from "@/shared/utils";
 
 export default function ChatMessage({ message }: { message: Message }) {
   const { user } = useAuthStore();

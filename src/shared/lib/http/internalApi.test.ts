@@ -90,7 +90,7 @@ describe("internalApi auth refresh", () => {
     );
 
     expect(externalApiMock.post).toHaveBeenCalledWith(
-      "/v1/modules/session/refresh",
+      "/v1/public/session/refresh",
       { refresh_token: "invalid-refresh-token" },
     );
     expect(useAuthStore.getState().isAuthenticated).toBe(false);

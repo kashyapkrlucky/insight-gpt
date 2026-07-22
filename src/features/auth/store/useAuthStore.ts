@@ -83,7 +83,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ loading: true });
       const {
         data: { data },
-      } = await axios.post("/v1/modules/session", {
+      } = await axios.post("/v1/public/session", {
         code,
       });
       const { user, access_token, refresh_token } = data;
@@ -108,7 +108,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const clientId = process.env.NEXT_PUBLIC_CLIENT_ID;
       const {
         data: { data },
-      } = await axios.post("/v1/modules/guest", { clientId });
+      } = await axios.post("/v1/public/guest", { clientId });
       const { user, access_token, refresh_token } = data;
       set({ user, access_token, refresh_token, isAuthenticated: true });
       setStoredToken(USER_KEY, JSON.stringify(user));
@@ -153,7 +153,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const {
       data: { data },
-    } = await axios.post(`/v1/modules/session/refresh`, {
+    } = await axios.post(`/v1/public/session/refresh`, {
       refresh_token: current_refresh_token,
     });
 

@@ -4,14 +4,23 @@ import { removeUploadedFile } from "@/jobs/document/removeUploadedFile";
 import { getUserFromHeaders } from "@/features/auth/utils";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   ctx: RouteContext<"/api/v1/chats/[id]">,
 ) {
   try {
+    const userId = await getUserFromHeaders(request);
+    if (!userId) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await ctx.params;
     const chat = await prisma.chat.findUnique({
       where: { id },
     });
+
+    if (!chat || chat.userId !== userId) {
+      return Response.json({ error: "Chat not found" }, { status: 404 });
+    }
 
     return Response.json(chat);
   } catch {
@@ -20,19 +29,20 @@ export async function GET(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   ctx: RouteContext<"/api/v1/chats/[id]">,
 ) {
   try {
-    const { id } = await ctx.params;
-    const userId = await getUserFromHeaders(_request);
+    const userId = await getUserFromHeaders(request);
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { id } = await ctx.params;
     const chat = await prisma.chat.findUnique({
       where: { id },
     });
-    if (!chat) {
+    if (!chat || chat.userId !== userId) {
       return Response.json({ error: "Chat not found" }, { status: 404 });
     }
 
@@ -50,13 +60,8 @@ export async function DELETE(
       documentId: document.id,
     });
 
-    await prisma.message.deleteMany({
-      where: { chatId: id },
-    });
-
-    await prisma.chat.delete({
-      where: { id },
-    });
+    // messages cascade-delete with the chat at the DB level
+    await prisma.chat.delete({ where: { id } });
 
     return Response.json("Chat deleted successfully");
   } catch {
