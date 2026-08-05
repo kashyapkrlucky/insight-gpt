@@ -99,4 +99,70 @@ describe("internalApi auth refresh", () => {
     expect(localStorage.getItem(REFRESH_TOKEN_KEY)).toBeNull();
     expect(localStorage.getItem(USER_KEY)).toBeNull();
   });
+
+  it("adds the Authorization header from the stored access token", async () => {
+    let capturedConfig: InternalAxiosRequestConfig | undefined;
+    internalApi.defaults.adapter = async (config) => {
+      capturedConfig = config;
+      return {
+        config,
+        data: {},
+        headers: {},
+        status: 200,
+        statusText: "OK",
+      };
+    };
+
+    await internalApi.get("/v1/chats");
+
+    expect(capturedConfig?.headers.Authorization).toBe(
+      "Bearer expired-access-token",
+    );
+  });
+
+  it("does not attempt a refresh when the failing request is the refresh endpoint itself", async () => {
+    internalApi.defaults.adapter = async (config) => {
+      throw createUnauthorizedError(config);
+    };
+
+    await expect(
+      internalApi.post("/v1/public/session/refresh", {
+        refresh_token: "invalid-refresh-token",
+      }),
+    ).rejects.toThrow("Unauthorized");
+
+    expect(externalApiMock.post).not.toHaveBeenCalled();
+    expect(useAuthStore.getState().isAuthenticated).toBe(true);
+  });
+
+  it("queues concurrent 401s during a single refresh and retries them once refreshed", async () => {
+    internalApi.defaults.adapter = async (config) => {
+      if (!(config as { _retry?: boolean })._retry) {
+        throw createUnauthorizedError(config);
+      }
+      return {
+        config,
+        data: { url: config.url },
+        headers: {},
+        status: 200,
+        statusText: "OK",
+      };
+    };
+
+    externalApiMock.post.mockResolvedValueOnce({
+      data: {
+        data: { access_token: "new-access", refresh_token: "new-refresh" },
+      },
+    });
+
+    const [resA, resB] = await Promise.all([
+      internalApi.get("/v1/a"),
+      internalApi.get("/v1/b"),
+    ]);
+
+    expect(externalApiMock.post).toHaveBeenCalledTimes(1);
+    expect(resA.data).toEqual({ url: "/v1/a" });
+    expect(resB.data).toEqual({ url: "/v1/b" });
+    expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toBe("new-access");
+  });
 });
