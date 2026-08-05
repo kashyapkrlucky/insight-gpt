@@ -1,13 +1,19 @@
 
 import "server-only";
+import type { retrieveChunks } from "./retrieve";
 
-export function buildContext(chunks: any[]) {
+type Chunks = Awaited<ReturnType<typeof retrieveChunks>>;
+
+export function buildContext(chunks: Chunks) {
   return chunks
     .map((chunk, index) => {
+      const content = (chunk.payload as Record<string, unknown> | undefined)
+        ?.content;
+
       return `
 SOURCE ${index + 1}
 
-${chunk.payload.content}
+${content}
 
 `;
     })
