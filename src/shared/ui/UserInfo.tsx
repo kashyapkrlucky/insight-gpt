@@ -1,47 +1,49 @@
 "use client";
 
-import useAuthStore from "@/features/auth/store/useAuthStore";
-import { getDisplayName, getInitials } from "../utils";
 import Image from "next/image";
+import useAuthStore from "@/features/auth/store/useAuthStore";
+import { cn, getDisplayName, getInitials } from "../utils";
+
+export function UserAvatar({ className }: { className?: string }) {
+  const { user } = useAuthStore();
+  if (!user) return null;
+
+  return user.avatar ? (
+    <Image
+      src={user.avatar}
+      alt=""
+      width={32}
+      height={32}
+      className={cn("size-8 shrink-0 rounded-full object-cover ring-1 ring-border", className)}
+    />
+  ) : (
+    <span
+      aria-hidden
+      className={cn(
+        "grid size-8 shrink-0 place-items-center rounded-full bg-accent-soft text-xs font-semibold text-accent-soft-fg",
+        className,
+      )}
+    >
+      {getInitials(user)}
+    </span>
+  );
+}
 
 export function UserInfo({ showEmail = true }: { showEmail?: boolean }) {
   const { user } = useAuthStore();
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <div className="flex-1 flex min-w-0 items-center gap-3">
-      {user && user.avatar ? (
-        <div className="relative">
-          <Image
-            src={user.avatar}
-            alt="User avatar"
-            width={36}
-            height={36}
-            className="h-9 w-9 rounded-md ring-1 ring-neutral-200 transition-all duration-200 group-hover:ring-neutral-300"
-          />
-        </div>
-      ) : (
-        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-neutral-950 text-sm font-semibold text-white ring-1 ring-neutral-200 transition-all duration-200">
-          {getInitials(user)}
-        </div>
-      )}
-
-      {showEmail ? (
-        <div className="min-w-0 flex-1 text-left">
-          <p className="truncate text-sm font-semibold text-neutral-800">
-            {getDisplayName(user)}
-          </p>
-          <p className="truncate text-xs text-neutral-500">
-            {user?.email || "No email"}
-          </p>
-        </div>
-      ) : (
-        <p className="hidden truncate text-sm font-semibold text-neutral-800 md:block">
+    <div className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+      <UserAvatar />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-fg">
           {getDisplayName(user)}
         </p>
-      )}
+        {showEmail && user.email && (
+          <p className="truncate text-xs text-muted">{user.email}</p>
+        )}
+      </div>
     </div>
   );
 }

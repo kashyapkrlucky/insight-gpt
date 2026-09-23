@@ -4,9 +4,9 @@ import { useAuthStore } from "@/features/auth/store/useAuthStore";
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import toast from "react-hot-toast";
 
+// The API is served by this same Next.js app, so requests stay same-origin.
 const internalApi = axios.create({
-  baseURL:
-    (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002") + "/api",
+  baseURL: "/api",
 });
 
 type RetryableAxiosRequestConfig = AxiosRequestConfig & {
@@ -37,7 +37,7 @@ const shouldSkipRefresh = (url?: string) => {
   return ["/v1/public/session/refresh"].some((path) => url.includes(path));
 };
 
-const logoutAndRedirectToLogin = () => {
+export const logoutAndRedirectToLogin = () => {
   useAuthStore.getState().logout();
   toast.error("Your session has expired. Please sign in again.", {
     id: "session-expired",

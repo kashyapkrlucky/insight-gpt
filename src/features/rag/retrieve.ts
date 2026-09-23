@@ -7,28 +7,17 @@ export async function retrieveChunks(
   documentId: string,
   userId: string,
 ) {
-  const result = await vectorDB.search("insight-pdf", {
-    vector,
-
+  const { points } = await vectorDB.query("insight-pdf", {
+    query: vector,
     limit: 5,
+    with_payload: true,
     filter: {
       must: [
-        {
-          key: "userId",
-          match: {
-            value: userId,
-          },
-        },
-
-        {
-          key: "documentId",
-          match: {
-            value: documentId,
-          },
-        },
+        { key: "userId", match: { value: userId } },
+        { key: "documentId", match: { value: documentId } },
       ],
     },
   });
 
-  return result;
+  return points;
 }

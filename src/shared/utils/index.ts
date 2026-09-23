@@ -1,10 +1,11 @@
 import { formatDistance } from "date-fns";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { IUser } from "@/features/auth/types";
 
-export function cn(
-  ...classes: readonly (false | null | string | undefined)[]
-): string {
-  return classes.filter(Boolean).join(" ");
+/** Joins class names and resolves Tailwind conflicts (later classes win). */
+export function cn(...classes: ClassValue[]): string {
+  return twMerge(clsx(classes));
 }
 
 export const formatDate = (date: Date) => {

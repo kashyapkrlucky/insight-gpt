@@ -1,26 +1,15 @@
 import { cn } from "@/shared/utils";
 
-interface TypingIndicatorProps {
-  className?: string;
-}
-
-export default function TypingIndicator({ className }: TypingIndicatorProps) {
+export default function TypingIndicator({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-1", className)}>
-      <div className="flex gap-1">
-        <div
-          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
-          style={{ animationDelay: "0ms" }}
+    <span aria-hidden className={cn("flex items-center gap-1", className)}>
+      {[0, 150, 300].map((delay) => (
+        <span
+          key={delay}
+          className="size-1.5 animate-bounce rounded-full bg-muted"
+          style={{ animationDelay: `${delay}ms` }}
         />
-        <div
-          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
-          style={{ animationDelay: "150ms" }}
-        />
-        <div
-          className="h-2 w-2 animate-bounce rounded-full bg-neutral-600"
-          style={{ animationDelay: "300ms" }}
-        />
-      </div>
-    </div>
+      ))}
+    </span>
   );
 }

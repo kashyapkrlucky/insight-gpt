@@ -1,5 +1,5 @@
 import { createClient } from "../client";
-import { UploadResponse } from "../types";
+import { ACCEPTED_MIME_TYPES, MAX_UPLOAD_BYTES } from "@/shared/constants";
 import {
   FileSizeError,
   FileTypeError,
@@ -18,63 +18,45 @@ export class StorageClientService {
       process.env.NEXT_PUBLIC_SUPABASE_BUCKET_NAME || "insight-pdf";
   }
 
-  private validateFile(file: File): void {
-    // Check file type
-    const allowedTypes = ["application/pdf"];
+  /** Client-side check for fast feedback. The server validates again. */
+  validateFile(file: File): void {
+    const allowedTypes: readonly string[] = ACCEPTED_MIME_TYPES;
     if (!allowedTypes.includes(file.type)) {
-      throw new FileTypeError(file.type, allowedTypes);
+      throw new FileTypeError(file.type, [...allowedTypes]);
     }
 
-    // Check file size (50MB limit)
-    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
-    if (file.size > maxSize) {
-      throw new FileSizeError(maxSize, file.size);
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new FileSizeError(MAX_UPLOAD_BYTES, file.size);
     }
   }
 
-  async uploadFile(file: File, userId: string): Promise<UploadResponse> {
+  /**
+   * Upload to a server-issued signed URL. No storage policies are needed,
+   * so the bucket can stay private.
+   */
+  async uploadToSignedUrl(
+    path: string,
+    token: string,
+    file: File,
+  ): Promise<{ success: boolean; error?: string }> {
     try {
-      // Validate file
-      this.validateFile(file);
-
-      // Generate a unique file name
-      const fileExt = file.name.split(".").pop();
-      const fileName = `/${userId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload file to Supabase Storage
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(this.bucketName)
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
+        .uploadToSignedUrl(path, token, file, {
+          contentType: file.type,
         });
+
       if (error) {
         const appError = new SupabaseError(error.message, error);
-        logError(appError, "uploadFile");
-        return {
-          success: false,
-          error: appError.message,
-        };
+        logError(appError, "uploadToSignedUrl");
+        return { success: false, error: appError.message };
       }
-      return {
-        success: true,
-        data: {
-          fileId: data.id,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          url: data.path,
-        },
-      };
+
+      return { success: true };
     } catch (error) {
       const appError = handleError(error);
-      logError(appError, "uploadFile");
-
-      return {
-        success: false,
-        error: appError.message,
-      };
+      logError(appError, "uploadToSignedUrl");
+      return { success: false, error: appError.message };
     }
   }
 }

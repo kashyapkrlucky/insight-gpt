@@ -1,5 +1,5 @@
 export const APP_NAME = "Insight GPT";
-export const APP_DESCRIPTION = "Upload pdf or image and get insights from Selene";
+export const APP_DESCRIPTION = "Chat with your PDFs. Answers grounded in your documents.";
 export const ASSISTANT_NAME = "Selene";
 
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
@@ -7,10 +7,10 @@ export const MAX_TRANSCRIPT_MESSAGES = 12;
 export const MAX_MESSAGE_CHARS = 4_000;
 export const ACCEPTED_MIME_TYPES = ["application/pdf"] as const;
 export const STARTER_PROMPTS = [
-  "Summarize the file",
-  "List action items",
-  "Explain the tricky parts",
-  "What should I notice?"
+  "Summarize this document",
+  "What are the key takeaways?",
+  "List any action items or deadlines",
+  "Explain the most complex part simply",
 ];
 
 
@@ -26,3 +26,6 @@ export const TEXT_BY_CONTINUING = "By continuing, you agree to our";
 export const TEXT_TERMS = "Terms of Service";
 export const TEXT_PRIVACY = "Privacy Policy";
 export const TEXT_COPYRIGHT = "2026 Insight GPT. All rights reserved.";
+/** Shown when a PDF has no extractable text (scanned, or text converted to outlines). */
+export const NO_TEXT_IN_PDF_MESSAGE =
+  "This PDF has no selectable text. It may be scanned, or its text may have been converted to shapes. Try a PDF where you can highlight the text.";

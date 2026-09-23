@@ -1,29 +1,19 @@
 import { prisma } from "@/infra/db/connect";
-import { getUserFromHeaders } from "@/features/auth/utils";
-import { NextRequest } from "next/server";
+import { withAuth } from "@/shared/lib/api/handler";
+import { notFound } from "@/shared/lib/api/errors";
 
-export async function GET(
-  request: NextRequest,
-  ctx: RouteContext<"/api/v1/chats/[id]/messages">,
-) {
-  try {
-    const userId = await getUserFromHeaders(request);
-    if (!userId) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = await ctx.params;
-
-    const chat = await prisma.chat.findUnique({ where: { id } });
-    if (!chat || chat.userId !== userId) {
-      return Response.json({ error: "Chat not found" }, { status: 404 });
-    }
+export const GET = withAuth<{ id: string }>(
+  async (_request, { user, params }) => {
+    const chat = await prisma.chat.findFirst({
+      where: { id: params.id, userId: user.id },
+      select: { id: true },
+    });
+    if (!chat) throw notFound("Chat not found");
 
     const messages = await prisma.message.findMany({
-      where: { chatId: id },
+      where: { chatId: chat.id },
+      orderBy: { createdAt: "asc" },
     });
     return Response.json(messages);
-  } catch {
-    return Response.json({ error: "Failed to fetch chat" }, { status: 500 });
-  }
-}
+  },
+);

@@ -4,6 +4,8 @@ export interface Chat {
   userId: string;
   title: string;
   createdAt: Date;
+  /** Indexing status of the chat's document, when the API includes it. */
+  document?: { status: string };
 }
 
 export interface Message {
@@ -11,15 +13,9 @@ export interface Message {
   chatId: string;
   author: string;
   content: string;
-  createdAt: Date;
-}
-
-export interface DocumentInput {
-  fileId: string;
-  url: string;
-  name: string;
-  size: number;
-  type: string;
+  createdAt: Date | string;
+  /** Client-only state for messages that aren't saved yet. */
+  status?: "sending" | "streaming" | "failed";
 }
 
 export interface FileObject {

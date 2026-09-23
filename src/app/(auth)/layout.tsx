@@ -13,16 +13,12 @@ export default function AuthLayout({
   const router = useRouter();
   useEffect(() => {
     if (!loading && user) {
-      router.push("/");
+      router.replace("/");
     }
   }, [user, loading, router]);
 
   if (loading) {
     return <PageLoader />;
   }
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 p-4">
-      {children}
-    </div>
-  );
+  return <div className="min-h-dvh bg-bg text-fg">{children}</div>;
 }

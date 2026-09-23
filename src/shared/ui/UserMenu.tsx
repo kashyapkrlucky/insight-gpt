@@ -1,91 +1,116 @@
 "use client";
 
-import { useState, useRef, useEffect, useSyncExternalStore } from "react";
-import { LogOut, ChevronUp } from "lucide-react";
-import { UserInfo } from "./UserInfo";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
+import toast from "react-hot-toast";
 import useAuthStore from "@/features/auth/store/useAuthStore";
 import { useChatStore } from "@/features/chats/store/useChatStore";
-import toast from "react-hot-toast";
+import { UserInfo } from "./UserInfo";
+import { ThemeToggle } from "./ThemeToggle";
+import { Kbd } from "./Kbd";
+import { MOD_KEY } from "@/shared/hooks/useKeyboardShortcuts";
 
-const subscribe = () => () => {};
-const getClientSnapshot = () => true;
-const getServerSnapshot = () => false;
+const SHORTCUTS = [
+  { keys: [MOD_KEY, "K"], label: "New chat" },
+  { keys: [MOD_KEY, "B"], label: "Toggle sidebar" },
+  { keys: ["/"], label: "Focus message box" },
+];
 
 export function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const { setCurrentChat } = useChatStore();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const isHydrated = useSyncExternalStore(
-    subscribe,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
+  const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    if (!isOpen) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
       }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
 
   const handleLogout = () => {
     logout();
     setCurrentChat(null);
     toast.success("Signed out.");
+    router.replace("/login");
   };
 
-  const userMenuButtonClasses =
-    "group flex w-full items-center justify-between rounded-md px-2 py-2 transition hover:bg-neutral-50";
-  const chevronClasses =
-    "h-4 w-4 text-neutral-400 transition-transform duration-200 group-hover:text-neutral-700";
-  const dropdownClasses =
-    "absolute bottom-14 left-0 z-50 w-72 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-lg";
-  const userInfoHeaderClasses =
-    "border-b border-neutral-200 bg-neutral-50 px-4 py-3";
-  const menuItemsClasses = "py-2";
-  const logoutButtonClasses =
-    "flex w-full items-center px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-red-50 hover:text-red-600";
+  if (!user) return null;
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={containerRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={userMenuButtonClasses}
-        aria-haspopup="true"
+        ref={buttonRef}
+        type="button"
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex w-full items-center gap-2 rounded-lg p-2 transition-colors hover:bg-surface-2"
+        aria-haspopup="dialog"
         aria-expanded={isOpen}
       >
-        {isHydrated && user && <UserInfo showEmail={false} />}
-
-        <ChevronUp
-          className={`${chevronClasses} ${isOpen ? "rotate-180" : ""}`}
-        />
+        <UserInfo showEmail={false} />
+        <ChevronsUpDownIcon className="size-4 shrink-0 text-subtle" />
       </button>
 
       {isOpen && (
-        <div className={dropdownClasses}>
-          {/* User Info Header */}
-          <div className={userInfoHeaderClasses}>
-            {isHydrated && user && <UserInfo />}
+        <div
+          role="dialog"
+          aria-label="Account"
+          className="absolute inset-x-0 bottom-full z-50 mb-2 animate-slide-up overflow-hidden rounded-xl border border-border bg-surface shadow-float"
+        >
+          <div className="border-b border-border p-3">
+            <UserInfo />
           </div>
 
-          <div className={menuItemsClasses}>
+          <div className="space-y-2 border-b border-border p-3">
+            <p className="text-xs font-medium text-muted">Appearance</p>
+            <ThemeToggle />
+          </div>
+
+          <div className="space-y-1.5 border-b border-border p-3">
+            <p className="text-xs font-medium text-muted">Keyboard shortcuts</p>
+            {SHORTCUTS.map(({ keys, label }) => (
+              <div
+                key={label}
+                className="flex items-center justify-between text-xs text-fg"
+              >
+                <span>{label}</span>
+                <span className="flex gap-1">
+                  {keys.map((key) => (
+                    <Kbd key={key}>{key}</Kbd>
+                  ))}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-1.5">
             <button
+              type="button"
               onClick={handleLogout}
-              className={logoutButtonClasses}
-              role="menuitem"
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-fg transition-colors hover:bg-danger-soft hover:text-danger"
             >
-              <LogOut className="mr-3 h-4 w-4" />
-              <span>Sign out</span>
+              <LogOutIcon className="size-4" />
+              Sign out
             </button>
           </div>
         </div>
